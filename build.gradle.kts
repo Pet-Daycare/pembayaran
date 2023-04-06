@@ -30,9 +30,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
+//tasks.withType<Test> {
+//	useJUnitPlatform()
+//}
 
 tasks.test {
 	useJUnitPlatform()
@@ -40,8 +40,7 @@ tasks.test {
 }
 tasks.jacocoTestReport {
 	classDirectories.setFrom(files(classDirectories.files.map {
-		fileTree(it) {
-			exclude("**/*Application**") }
+		fileTree(it) { exclude("**/*Application**") }
 	}))
 	dependsOn(tasks.test) // tests are required to run before generating the report
 	reports {
