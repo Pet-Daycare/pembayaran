@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping(path={"order","order/"})
+@RequestMapping(path={"payment","payment/"})
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -25,9 +25,9 @@ public class PaymentController {
     }
 
     @GetMapping("")
-    public String allOrder(Model model) {
-        model.addAttribute("allOrder",paymentService.allOrder());
-        return "all_order";
+    public String allPayment(Model model) {
+        model.addAttribute("allPayment",paymentService.allOrder());
+        return "all_payment";
     }
 
 

@@ -9,7 +9,6 @@ import lombok.Setter;
 public class Order {
     private String id;
     private String customerName;
-
     private String petName;
     private double discount;
     private double timeTaken;
