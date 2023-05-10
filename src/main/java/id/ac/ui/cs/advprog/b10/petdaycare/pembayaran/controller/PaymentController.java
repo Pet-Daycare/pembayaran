@@ -1,58 +1,55 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.Coupon;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.Order;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.PaymentDto;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.OrderRepository;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.PaymentRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Bill;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Coupon;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Voucher;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(path={"payment","payment/"})
+import java.util.List;
+
+
+@RestController
+@RequestMapping(path={"api/payment"})
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final OrderRepository orderRepository;
 
-    @Autowired
-    PaymentController(PaymentService paymentService,
-                      OrderRepository orderRepository) {
-        this.paymentService = paymentService;
-        this.orderRepository = orderRepository;
+
+    @PostMapping("/customer/pay")
+    public ResponseEntity<Bill> createPayment(@RequestBody PaymentRequest request) throws InterruptedException {
+        Bill bill = paymentService.createBill(request);
+        bill = paymentService.makePayment(bill);
+        return ResponseEntity.ok(bill);
     }
 
-    @GetMapping("")
-    public String allPayment(Model model) {
-        model.addAttribute("allPayment",paymentService.allOrder());
-        return "all_payment";
+    @PutMapping("/admin/approve/{id}")
+    public ResponseEntity<Bill> approvePayment(@PathVariable String id){
+        Bill bill = paymentService.approvePayment(id);
+        return ResponseEntity.ok(bill);
     }
 
-
-    @PostMapping(path={"pay","pay/"})
-    public String pay(@RequestParam String foodId,
-                      @RequestParam String couponId,
-                      @RequestParam String customerId ) throws InterruptedException {
-        PaymentDto paymentDto = new PaymentDto(couponId, customerId, foodId);
-        long start = System.nanoTime();
-        Order order = paymentService.pay(paymentDto);
-        long end = System.nanoTime();
-
-        order.setTimeTaken( (double) (end - start) / 1_000_000_000);
-        orderRepository.add(order);
-
-        return "redirect:/order";
+    @GetMapping("/admin/not-approved/")
+    public ResponseEntity<List<Bill>> getAllNotAprove(){
+        List<Bill> bills = paymentService.getAllNotApproved();
+        return ResponseEntity.ok(bills);
+    }
+    @PostMapping("/admin/coupon/add")
+    public ResponseEntity<Coupon> addCoupon(@RequestBody CouponRequest request) throws InterruptedException {
+        Coupon coupon = paymentService.addCoupon(request);
+        return ResponseEntity.ok(coupon);
     }
 
-    @GetMapping(path={"pay","pay/"})
-    public String payForm(Model model) {
-        model.addAttribute("allPets",paymentService.allPets());
-        model.addAttribute("allCustomer",paymentService.allCustomer());
-        model.addAttribute("allCoupon",paymentService.allCoupon());
-
-        return "payment_form";
+    @PostMapping("/admin/voucher/add")
+    public ResponseEntity<Voucher> addVoucher(@RequestBody VoucherRequest request) throws InterruptedException {
+        Voucher voucher = paymentService.addVoucher(request);
+        return ResponseEntity.ok(voucher);
     }
 
 }

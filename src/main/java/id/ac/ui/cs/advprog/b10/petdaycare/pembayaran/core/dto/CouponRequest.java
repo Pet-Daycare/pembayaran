@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequest {
-    private Integer idPenitipan;
-    private int total;
-    private int customerBalance;
-    private String method;
-    private String code;
+public class CouponRequest {
+    private double discount;
 }

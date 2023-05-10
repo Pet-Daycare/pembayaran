@@ -5,13 +5,11 @@ import lombok.Getter;
 @Getter
 public class PaymentDto {
     private String couponId;
-    private String customerId;
-    private String petId;
+    private String paymentId;
 
-    public PaymentDto(String couponId, String customerId, String petId) {
+    public PaymentDto(String couponId, String paymentId) {
         this.couponId = couponId;
-        this.customerId = customerId;
-        this.petId = petId;
+        this.paymentId = paymentId;
     }
 
 }

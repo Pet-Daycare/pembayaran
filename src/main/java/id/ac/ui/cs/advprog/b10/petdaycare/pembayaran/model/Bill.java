@@ -14,14 +14,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "payment")
-public class Payment {
+@Table(name = "bill")
+public class Bill {
     @Id
     @GeneratedValue
     private Integer id;
 
     private Integer idPenitipan;
-    private int total;
-    private String metode;
+    private double total;
+    private double customerBalance;
+    private String method;
+    private String code;
+    private boolean paid;
     private boolean verified;
 }
