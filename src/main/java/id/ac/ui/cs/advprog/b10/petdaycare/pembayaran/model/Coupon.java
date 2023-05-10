@@ -26,7 +26,7 @@ public class Coupon {
 
     public synchronized Bill redeem(Bill bill) throws InterruptedException {
         if (!isRedeemed) {
-            Thread.sleep(3000);
+//            Thread.sleep(3000);
             double customerBalance = bill.getCustomerBalance();
             double price = bill.getTotal();
             if (isEnoughBalance(customerBalance, price)) {

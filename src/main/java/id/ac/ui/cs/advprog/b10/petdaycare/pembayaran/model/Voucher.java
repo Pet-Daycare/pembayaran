@@ -24,7 +24,7 @@ public class Voucher {
     private double amount;
     private boolean isRedeemed;
 
-    public Bill redeem(Bill bill) {
+    public synchronized Bill redeem(Bill bill) {
         if (bill.getTotal() == this.amount) {
             this.isRedeemed = true;
             bill.setPaid(true);
