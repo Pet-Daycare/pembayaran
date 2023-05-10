@@ -12,8 +12,16 @@ public interface PaymentService {
     Bill createBill(PaymentRequest request);
     Bill makePayment(Bill bill) throws InterruptedException;
     Bill approvePayment(String id);
-    List<Bill> getAllNotApproved();
+    List<Bill> approveAllPayments();
+    Bill getBillById(String id);
+    List<Bill> getAllBills();
+    List<Bill> getAllVerified();
+    List<Bill> getAllNotVerified();
     Coupon addCoupon(CouponRequest request);
+    Coupon getCouponByCode(String code);
+    List<Coupon> getAllCoupons();
     Voucher addVoucher(VoucherRequest request);
+    Voucher getVoucherByCode(String code);
+    List<Voucher> getAllVouchers();
 
 }

@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentRequest {
     private Integer idPenitipan;
-    private int total;
-    private int customerBalance;
+    private double total;
+    private double customerBalance;
     private String method;
     private String code;
 }

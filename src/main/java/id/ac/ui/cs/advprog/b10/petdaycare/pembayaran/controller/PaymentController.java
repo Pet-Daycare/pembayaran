@@ -35,9 +35,32 @@ public class PaymentController {
         return ResponseEntity.ok(bill);
     }
 
-    @GetMapping("/admin/not-approved/")
-    public ResponseEntity<List<Bill>> getAllNotAprove(){
-        List<Bill> bills = paymentService.getAllNotApproved();
+    @PutMapping("/admin/approve-all")
+    public ResponseEntity<List<Bill>> approveAllPayments(){
+        List<Bill> bills = paymentService.approveAllPayments();
+        return ResponseEntity.ok(bills);
+    }
+
+    @GetMapping("/admin/approved/")
+    public ResponseEntity<List<Bill>> getAllVerified(){
+        List<Bill> bills = paymentService.getAllVerified();
+        return ResponseEntity.ok(bills);
+    }
+
+    @GetMapping("/admin/not-approved")
+    public ResponseEntity<List<Bill>> getAllNotVerified(){
+        List<Bill> bills = paymentService.getAllNotVerified();
+        return ResponseEntity.ok(bills);
+    }
+
+    @GetMapping("/admin/bill/{id}")
+    public ResponseEntity<Bill> getBillById(@PathVariable String id){
+        Bill bill = paymentService.getBillById(id);
+        return ResponseEntity.ok(bill);
+    }
+    @GetMapping("/admin/all-bills")
+    public ResponseEntity<List<Bill>> getAllBills(){
+        List<Bill> bills = paymentService.getAllBills();
         return ResponseEntity.ok(bills);
     }
     @PostMapping("/admin/coupon/add")
@@ -46,10 +69,30 @@ public class PaymentController {
         return ResponseEntity.ok(coupon);
     }
 
+    @GetMapping("/coupon/{code}")
+    public ResponseEntity<Coupon> getCouponByCode(@PathVariable String code){
+        return ResponseEntity.ok(paymentService.getCouponByCode(code));
+    }
+
+    @GetMapping("/coupons")
+    public ResponseEntity<List<Coupon>> getAllCoupons(){
+        return ResponseEntity.ok(paymentService.getAllCoupons());
+    }
+
     @PostMapping("/admin/voucher/add")
     public ResponseEntity<Voucher> addVoucher(@RequestBody VoucherRequest request) throws InterruptedException {
         Voucher voucher = paymentService.addVoucher(request);
         return ResponseEntity.ok(voucher);
+    }
+
+    @GetMapping("/voucher/{code}")
+    public ResponseEntity<Voucher> getVouchernByCode(@PathVariable String code){
+        return ResponseEntity.ok(paymentService.getVoucherByCode(code));
+    }
+
+    @GetMapping("/vouchers")
+    public ResponseEntity<List<Voucher>> getAllVouchers(){
+        return ResponseEntity.ok(paymentService.getAllVouchers());
     }
 
 }

@@ -50,12 +50,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
     @Override
     public Bill makePayment(Bill bill) throws InterruptedException {
+        String method = bill.getMethod();
         String code = bill.getCode();
 
-        if (voucherRepository.existsByCode(code)) {
+        if (method.equals("voucher") && voucherRepository.existsByCode(code)) {
             VoucherAdapter voucherAdapter = new VoucherAdapter(voucherRepository.findByCode(code));
             return voucherAdapter.pay(bill);
-        } else if (couponRepository.existsByCode(code)) {
+        } else if (method.equals("coupon") && !code.equals("") && couponRepository.existsByCode(code)) {
             CouponAdapter couponAdapter = new CouponAdapter(couponRepository.findByCode(code));
             return couponAdapter.pay(bill);
         } else {
@@ -65,18 +66,45 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Bill approvePayment(String id) {
+    public Bill getBillById(String id) {
         Bill bill = null;
         if (billRepository.findById(id).isPresent()) {
             bill = billRepository.findById(id).get();
-            bill.setVerified(true);
         }
         return bill;
     }
 
     @Override
-    public List<Bill> getAllNotApproved() {
+    public Bill approvePayment(String id) {
+        Bill bill = getBillById(id);
+        bill.setVerified(true);
+        return bill;
+    }
+
+    @Override
+    public List<Bill> approveAllPayments() {
         List<Bill> bills = billRepository.findAllByVerified(false);
+        for (Bill bill: bills) {
+            bill.setVerified(true);
+        }
+        return bills;
+    }
+
+    @Override
+    public List<Bill> getAllVerified() {
+        List<Bill> bills = billRepository.findAllByVerified(true);
+        return bills;
+    }
+
+    @Override
+    public List<Bill> getAllNotVerified() {
+        List<Bill> bills = billRepository.findAllByVerified(false);
+        return bills;
+    }
+
+    @Override
+    public List<Bill> getAllBills() {
+        List<Bill> bills = billRepository.findAll();
         return bills;
     }
 
@@ -85,7 +113,18 @@ public class PaymentServiceImpl implements PaymentService {
         Coupon coupon = new Coupon();
         coupon.setCode(CodeGenerator.generate());
         coupon.setDiscount(request.getDiscount());
+        couponRepository.save(coupon);
         return coupon;
+    }
+
+    @Override
+    public Coupon getCouponByCode(String code) {
+        return couponRepository.findByCode(code);
+    }
+
+    @Override
+    public List<Coupon> getAllCoupons() {
+        return couponRepository.findAll();
     }
 
     @Override
@@ -93,7 +132,18 @@ public class PaymentServiceImpl implements PaymentService {
         Voucher voucher = new Voucher();
         voucher.setCode(CodeGenerator.generate());
         voucher.setAmount(request.getAmount());
+        voucherRepository.save(voucher);
         return voucher;
+    }
+
+    @Override
+    public Voucher getVoucherByCode(String code) {
+        return voucherRepository.findByCode(code);
+    }
+
+    @Override
+    public List<Voucher> getAllVouchers() {
+        return voucherRepository.findAll();
     }
 }
 

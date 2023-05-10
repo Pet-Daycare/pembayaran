@@ -31,7 +31,9 @@ public class Coupon {
             double price = bill.getTotal();
             if (isEnoughBalance(customerBalance, price)) {
                 isRedeemed = true;
-                bill.setCustomerBalance(customerBalance - (price - (discount/100) * price));
+                double finalPrice = price - (discount/100) * price;
+                bill.setCustomerBalance(customerBalance - finalPrice);
+                bill.setTotal(finalPrice);
                 bill.setPaid(true);
             }
         }
