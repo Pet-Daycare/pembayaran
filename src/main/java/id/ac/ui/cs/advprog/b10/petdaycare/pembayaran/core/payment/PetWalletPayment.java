@@ -1,6 +1,6 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Bill;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import lombok.Getter;
 import lombok.Setter;
 

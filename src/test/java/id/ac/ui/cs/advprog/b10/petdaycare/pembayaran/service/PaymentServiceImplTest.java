@@ -1,7 +1,7 @@
 //package id.ac.ui.cs.advprog.articleservice.service;
 //import id.ac.ui.cs.advprog.articleservice.model.Article;
 //import id.ac.ui.cs.advprog.articleservice.repository.ArticleRepository;
-//import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.BillRepository;
+//import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.mockito.InjectMocks;

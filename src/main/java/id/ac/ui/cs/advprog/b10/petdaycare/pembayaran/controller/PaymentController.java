@@ -1,12 +1,12 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.CouponRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.PaymentRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.VoucherRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Bill;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Coupon;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Voucher;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.PaymentService;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,37 +62,6 @@ public class PaymentController {
     public ResponseEntity<List<Bill>> getAllBills(){
         List<Bill> bills = paymentService.getAllBills();
         return ResponseEntity.ok(bills);
-    }
-    @PostMapping("/admin/coupon/add")
-    public ResponseEntity<Coupon> addCoupon(@RequestBody CouponRequest request) throws InterruptedException {
-        Coupon coupon = paymentService.addCoupon(request);
-        return ResponseEntity.ok(coupon);
-    }
-
-    @GetMapping("/coupon/{code}")
-    public ResponseEntity<Coupon> getCouponByCode(@PathVariable String code){
-        return ResponseEntity.ok(paymentService.getCouponByCode(code));
-    }
-
-    @GetMapping("/coupons")
-    public ResponseEntity<List<Coupon>> getAllCoupons(){
-        return ResponseEntity.ok(paymentService.getAllCoupons());
-    }
-
-    @PostMapping("/admin/voucher/add")
-    public ResponseEntity<Voucher> addVoucher(@RequestBody VoucherRequest request) throws InterruptedException {
-        Voucher voucher = paymentService.addVoucher(request);
-        return ResponseEntity.ok(voucher);
-    }
-
-    @GetMapping("/voucher/{code}")
-    public ResponseEntity<Voucher> getVouchernByCode(@PathVariable String code){
-        return ResponseEntity.ok(paymentService.getVoucherByCode(code));
-    }
-
-    @GetMapping("/vouchers")
-    public ResponseEntity<List<Voucher>> getAllVouchers(){
-        return ResponseEntity.ok(paymentService.getAllVouchers());
     }
 
 }

@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequest {
-    private Integer idPenitipan;
-    private double total;
-    private double customerBalance;
-    private String method;
-    private String code;
+public class AuthTransactionDto {
+    Integer idCustomer;
+    String username;
+    String token;
 }

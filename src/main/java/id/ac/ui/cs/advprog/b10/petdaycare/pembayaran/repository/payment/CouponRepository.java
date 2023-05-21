@@ -1,8 +1,7 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Coupon;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 
 public interface CouponRepository extends JpaRepository<Coupon, Integer> {

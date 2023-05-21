@@ -1,8 +1,7 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Bill;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

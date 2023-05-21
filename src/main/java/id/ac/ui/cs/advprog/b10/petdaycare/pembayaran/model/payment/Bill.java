@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +20,7 @@ public class Bill {
     @GeneratedValue
     private Integer id;
 
+//    private Integer idCustomer;
     private Integer idPenitipan;
     private double total;
     private double customerBalance;

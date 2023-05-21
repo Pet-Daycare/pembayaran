@@ -1,10 +1,10 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.CouponRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.PaymentRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.VoucherRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Bill;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Coupon;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Voucher;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
 
 import java.util.List;
 

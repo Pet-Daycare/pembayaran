@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
