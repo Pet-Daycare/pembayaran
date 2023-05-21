@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentRequest {
     private Integer idPenitipan;
+
+    private String username;
+    private String token;
     private double total;
-    private double customerBalance;
     private String method;
     private String code;
 }

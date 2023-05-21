@@ -20,6 +20,9 @@ public class TopUp {
     @Column(name = "username")
     private String username;
 
+    @Column(name= "customer_id")
+    private Integer customerId;
+
     @Enumerated(EnumType.STRING)
     private TopUpMethod typeMethod;
 

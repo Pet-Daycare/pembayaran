@@ -20,15 +20,15 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @GetMapping("detail/{username}")
-    public ResponseEntity<Customer> detailCustomer(@PathVariable("username") String username){
-        Customer response = customerService.findCustomer(username);
+    @GetMapping("detail")
+    public ResponseEntity<Customer> detailCustomer(@RequestBody CustomerRequest request){
+        Customer response = customerService.findCustomer(request.getUsername());
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("detail/trasaction/{username}")
-    public ResponseEntity<List<TopUp>> historyTopUp(@PathVariable("username") String username){
-        List<TopUp> response = customerService.historyTopUp(username);
+    @GetMapping("detail/trasaction")
+    public ResponseEntity<List<TopUp>> historyTopUp(@RequestBody CustomerRequest request){
+        List<TopUp> response = customerService.historyTopUp(request.getUsername());
         return ResponseEntity.ok(response);
     }
 

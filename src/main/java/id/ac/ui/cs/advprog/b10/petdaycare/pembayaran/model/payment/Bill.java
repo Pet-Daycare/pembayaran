@@ -1,9 +1,6 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,12 +16,19 @@ public class Bill {
     @Id
     @GeneratedValue
     private Integer id;
+    @Column(name = "username")
+    private String username;
 
-//    private Integer idCustomer;
+    @Column(name= "customer_id")
+    private Integer idCustomer;
+
+    @Column(name= "penitipan_id")
     private Integer idPenitipan;
     private double total;
     private double customerBalance;
-    private String method;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod method;
     private String code;
     private boolean paid;
     private boolean verified;

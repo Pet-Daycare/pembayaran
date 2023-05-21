@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model;
 
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,6 +18,9 @@ public class Customer {
     @GeneratedValue
     private Integer id;
 
+    @Column(name= "customer_id")
+    private Integer customerId;
+
     @Column(name = "username")
     private String username;
 
@@ -28,5 +32,8 @@ public class Customer {
     @JoinColumn(name = "topUp_id")
     private List<TopUp> topUpList;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
+    private List<Bill> paymentList;
 }
 

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TopUpRequest {
     private String username;
+
+    private String token;
     private String typeMethod;
     private  double nominal;
 }

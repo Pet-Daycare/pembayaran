@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CustomerRequest {
     private String username;
+    private String token;
 }

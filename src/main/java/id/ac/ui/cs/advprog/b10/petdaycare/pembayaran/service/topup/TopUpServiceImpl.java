@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.topup;
 
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.TopUpRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.InvalidInputException;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
@@ -28,24 +29,27 @@ public class TopUpServiceImpl implements TopUpService{
     @Override
     public TopUp createTopUpRequest(TopUpRequest request){
         if(request.getUsername() == null) throw new InvalidInputException();
+        if(request.getToken() == null) throw new InvalidInputException();
         if(request.getNominal() <= 0) throw new InvalidInputException();
         if(request.getTypeMethod() == null) throw new InvalidInputException();
 
         Customer findCustomer = customerService.findCustomer(request.getUsername());
         if(findCustomer == null){
-            return null;
-        } else {
-
-            TopUp topUp = new TopUp();
-            topUp.setUsername(findCustomer.getUsername());
-            topUp.setTypeMethod(TopUpMethod.valueOf(request.getTypeMethod()));
-            topUp.setTimeTaken(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase());
-            topUp.setNominal(request.getNominal());
-            topUp.setValidate(false);
-            topUpRepository.save(topUp);
-            addTopUpToCustomer(findCustomer, topUp);
-            return topUp;
+            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
         }
+
+        TopUp topUp = new TopUp();
+        topUp.setUsername(findCustomer.getUsername());
+        topUp.setCustomerId(findCustomer.getCustomerId());
+        topUp.setTypeMethod(TopUpMethod.valueOf(request.getTypeMethod()));
+        topUp.setTimeTaken(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase());
+        topUp.setNominal(request.getNominal());
+        topUp.setValidate(false);
+
+        topUpRepository.save(topUp);
+        addTopUpToCustomer(findCustomer, topUp);
+
+        return topUp;
     }
 
     @Override
@@ -56,6 +60,11 @@ public class TopUpServiceImpl implements TopUpService{
     @Override
     public String aprovalTopUp(String id){
         TopUp topUpAprove = findTopUpId(id);
+
+        if(topUpAprove.isValidate()){
+            return "Already validated!";
+        }
+
         topUpAprove.setValidate(true);
         customerService.addBalance(topUpAprove.getUsername(), topUpAprove.getNominal());
         return String.format("Success TopUp with ID: %s ", id);
@@ -68,6 +77,7 @@ public class TopUpServiceImpl implements TopUpService{
 
 
     public TopUp findTopUpId(String id){
+        System.out.println(topUpRepository.findAll());
         if(topUpRepository.findToUpById(id).isEmpty()){
             return null;
         }
