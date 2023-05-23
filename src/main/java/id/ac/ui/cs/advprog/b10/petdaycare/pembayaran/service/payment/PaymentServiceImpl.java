@@ -14,7 +14,6 @@ import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.VoucherRepository;
@@ -90,16 +89,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Bill getBillById(String id) {
-        Bill bill = null;
-        if (billRepository.findById(id).isPresent()) {
-            bill = billRepository.findById(id).get();
-        }
-        return bill;
+    public Bill getBillById(Integer id) {
+        return billRepository.findBillById(id);
     }
 
     @Override
-    public Bill approvePayment(String id) {
+    public Bill approvePayment(Integer id) {
         Bill bill = getBillById(id);
 
 //        Customer customer = customerService.findCustomer(bill.getUsername());
@@ -122,20 +117,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Bill> getAllVerified() {
-        List<Bill> bills = billRepository.findAllByVerified(true);
-        return bills;
+        return billRepository.findAllByVerified(true);
     }
 
     @Override
     public List<Bill> getAllNotVerified() {
-        List<Bill> bills = billRepository.findAllByVerified(false);
-        return bills;
+        return billRepository.findAllByVerified(false);
     }
 
     @Override
     public List<Bill> getAllBills() {
-        List<Bill> bills = billRepository.findAll();
-        return bills;
+        return billRepository.findAll();
     }
 
     @Override
