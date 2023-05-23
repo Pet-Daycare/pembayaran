@@ -33,56 +33,9 @@ class PaymentServiceImplTest {
     @InjectMocks
     private PaymentServiceImpl paymentService;
 
-    Coupon couponDisc50;
-    Voucher voucherAmount150;
-    Bill userWithPetWallet;
-    Bill userWithCoupon;
-
-    Bill userWithVoucher;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
-//        couponDisc50 = Coupon.builder()
-//                .code("coupon50")
-//                .discount(50)
-//                .build();
-//
-//        voucherAmount150 = Voucher.builder()
-//                .code("voucher150")
-//                .amount(150000)
-//                .build();
-//
-//        userWithPetWallet = Bill.builder()
-//                .idCustomer(1)
-//                .username("katniss")
-//                .idPenitipan(1)
-//                .total(150000)
-//                .customerBalance(200000)
-//                .method(PaymentMethod.PET_WALLET)
-//                .code("")
-//                .build();
-//
-//        userWithCoupon = Bill.builder()
-//                .idCustomer(2)
-//                .username("georgia")
-//                .idPenitipan(2)
-//                .total(140000)
-//                .customerBalance(100000)
-//                .method(PaymentMethod.PET_WALLET_WITH_COUPON)
-//                .code("coupon50")
-//                .build();
-//
-//        userWithVoucher = Bill.builder()
-//                .idCustomer(3)
-//                .username("sheldon")
-//                .idPenitipan(3)
-//                .total(150000)
-//                .customerBalance(100000)
-//                .method(PaymentMethod.PET_WALLET_WITH_VOUCHER)
-//                .code("voucher150")
-//                .build();
     }
 
     @Test
