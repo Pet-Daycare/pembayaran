@@ -13,7 +13,6 @@ sonarqube {
 	}
 }
 
-
 group = "id.ac.ui.cs.advprog.b10.petdaycare"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17

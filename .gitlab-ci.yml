@@ -26,9 +26,6 @@ sonarcloud-check:
     - master
     - develop
 
-
-
-
 stages:
   - build
   - test
