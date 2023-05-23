@@ -31,9 +31,13 @@ public class CustomerController {
         List<TopUp> response = customerService.historyTopUp(request.getUsername());
         return ResponseEntity.ok(response);
     }
+    @GetMapping("frontend")
+    public ResponseEntity<Customer> detailCustomerFrontend(@RequestParam String username, @RequestParam String token){
+        Customer response = customerService.getCustomerFrontend(username, token);
+        return ResponseEntity.ok(response);
+    }
 
-
-    @PostMapping("/add")
+    @PostMapping("add")
     public ResponseEntity<Customer> addCustomer(@RequestBody CustomerRequest request){
         return ResponseEntity.ok(customerService.createCustomer(request));
     }

@@ -10,6 +10,8 @@ public interface CustomerService {
 
     Customer createCustomer(CustomerRequest request);
     Customer findCustomer(String username);
+
+    Customer getCustomerFrontend(String username, String token);
     Double addBalance(String username, double amount);
     List<TopUp> historyTopUp(String username);
 
