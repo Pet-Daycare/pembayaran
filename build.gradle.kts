@@ -2,9 +2,17 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.0.4"
 	id("io.spring.dependency-management") version "1.1.0"
-	id("org.sonarqube") version "3.0"
+	id ("org.sonarqube") version "4.0.0.2929"
 	jacoco
 }
+
+sonarqube {
+	properties {
+		property ("sonar.projectKey", "pembayaran")
+		property ("sonar.organization", "petdaycaree")
+	}
+}
+
 
 group = "id.ac.ui.cs.advprog.b10.petdaycare"
 version = "0.0.1-SNAPSHOT"

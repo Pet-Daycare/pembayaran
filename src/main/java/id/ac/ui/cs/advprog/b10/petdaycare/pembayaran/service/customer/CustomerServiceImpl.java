@@ -67,6 +67,14 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
+    public Customer getCustomerFrontend(String username, String token){
+        if(isCustomerDoesNotExist(username)) {
+            return createCustomer(new CustomerRequest(username, token));
+        }
+        return customerRepository.findCustomersByusername(username).get();
+
+    }
+    @Override
     public List<TopUp> historyTopUp(String username){
         Customer customer = findCustomer(username);
         List<TopUp>  customerLits = customer.getTopUpList();
