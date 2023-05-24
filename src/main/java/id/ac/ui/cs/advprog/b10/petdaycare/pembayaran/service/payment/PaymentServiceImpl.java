@@ -14,7 +14,6 @@ import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.VoucherRepository;
@@ -23,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -54,9 +55,33 @@ public class PaymentServiceImpl implements PaymentService {
 
         Customer findCustomer = customerService.findCustomer(request.getUsername());
         if(findCustomer == null){
-            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
+//            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
+
+
+            Customer customer = new Customer();
+            customer.setUsername(request.getUsername());
+//            customer.setBalance(null);
+//            customer.setTopUpList(new ArrayList<>());
+//            customer.setPaymentList(new ArrayList<>());
+
+            var bill = Bill.builder()
+                    .idCustomer(customer.getCustomerId())
+                    .username(customer.getUsername())
+                    .idPenitipan(request.getIdPenitipan())
+                    .total(request.getTotal())
+//                    .customerBalance(customer.getBalance())
+                    .method(PaymentMethod.valueOf(request.getMethod()))
+                    .code(request.getCode())
+                    .build();
+
+            billRepository.save(bill);
+            return bill;
         }
 
+        return getBill(request, findCustomer);
+    }
+
+    private Bill getBill(PaymentRequest request, Customer findCustomer) {
         var bill = Bill.builder()
                 .idCustomer(findCustomer.getCustomerId())
                 .username(findCustomer.getUsername())
@@ -72,6 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         return bill;
     }
+
     @Override
     public Bill makePayment(Bill bill) throws InterruptedException {
         PaymentMethod method = bill.getMethod();
@@ -90,16 +116,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Bill getBillById(String id) {
-        Bill bill = null;
-        if (billRepository.findById(id).isPresent()) {
-            bill = billRepository.findById(id).get();
-        }
-        return bill;
+    public Bill getBillById(Integer id) {
+        return billRepository.findBillById(id);
+
     }
 
     @Override
-    public Bill approvePayment(String id) {
+    public Bill approvePayment(Integer id) {
         Bill bill = getBillById(id);
 
 //        Customer customer = customerService.findCustomer(bill.getUsername());
@@ -122,20 +145,18 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Bill> getAllVerified() {
-        List<Bill> bills = billRepository.findAllByVerified(true);
-        return bills;
+        return billRepository.findAllByVerified(true);
     }
 
     @Override
     public List<Bill> getAllNotVerified() {
-        List<Bill> bills = billRepository.findAllByVerified(false);
-        return bills;
+        return billRepository.findAllByVerified(false);
     }
 
     @Override
     public List<Bill> getAllBills() {
-        List<Bill> bills = billRepository.findAll();
-        return bills;
+        return billRepository.findAll();
+
     }
 
     @Override
