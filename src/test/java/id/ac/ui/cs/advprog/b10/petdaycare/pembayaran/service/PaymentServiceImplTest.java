@@ -1,43 +1,149 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.CodeGenerator;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.CouponAdapter;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.VoucherAdapter;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.PetWalletPayment;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.InvalidInputException;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.VoucherRepository;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class PaymentServiceImplTest {
-    @Mock
-    private BillRepository billRepository;
-    @Mock
+@SpringBootTest
+public class PaymentServiceImplTest {
+
+    @MockBean
     private CouponRepository couponRepository;
-    @Mock
+
+    @MockBean
     private VoucherRepository voucherRepository;
 
+    @MockBean
+    private BillRepository billRepository;
 
-    @InjectMocks
+    @MockBean
+    private CustomerService customerService;
+
+    @Autowired
     private PaymentServiceImpl paymentService;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
     }
 
+    @Test
+    public void testCreateBill_WithValidRequest_ShouldCreateBill() {
+        // Arrange
+        PaymentRequest request = new PaymentRequest();
+        request.setUsername("john_doe");
+        request.setToken("123456");
+        request.setIdPenitipan(1);
+        request.setTotal(100.0);
+        request.setMethod("PET_WALLET");
+        request.setCode("ABC123");
+
+        Customer customer = new Customer();
+        customer.setCustomerId(1);
+        customer.setUsername("john_doe");
+        customer.setBalance(200.0);
+
+        when(customerService.findCustomer("john_doe")).thenReturn(customer);
+
+        // Act
+        Bill bill = paymentService.createBill(request);
+
+        // Assert
+        assertNotNull(bill);
+        assertEquals("john_doe", bill.getUsername());
+        assertEquals(1, bill.getIdPenitipan());
+        assertEquals(100.0, bill.getTotal());
+        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
+        assertEquals("ABC123", bill.getCode());
+        assertFalse(bill.isVerified());
+        assertEquals(customer.getCustomerId(), bill.getIdCustomer());
+        assertEquals(customer.getBalance(), bill.getCustomerBalance());
+        verify(billRepository, times(1)).save(bill);
+        verify(customerService, never()).createCustomer(any());
+        verify(customerService, times(1)).findCustomer("john_doe");
+        verify(customerService, never()).setBalance(any(), anyDouble());
+    }
+
+    @Test
+    public void testCreateBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
+        // Arrange
+        PaymentRequest request = new PaymentRequest();
+        request.setUsername("john_doe");
+        request.setToken("123456");
+        request.setIdPenitipan(1);
+        request.setTotal(100.0);
+        request.setMethod("PET_WALLET");
+        request.setCode("ABC123");
+
+        when(customerService.findCustomer("john_doe")).thenReturn(null);
+
+        // Act
+        Bill bill = paymentService.createBill(request);
+
+        // Assert
+        assertNotNull(bill);
+        assertEquals("john_doe", bill.getUsername());
+        assertEquals(1, bill.getIdPenitipan());
+        assertEquals(100.0, bill.getTotal());
+        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
+        assertEquals("ABC123", bill.getCode());
+        assertFalse(bill.isVerified());
+        assertNull(bill.getIdCustomer());
+        assertEquals(0.0, bill.getCustomerBalance());
+        verify(billRepository, times(1)).save(bill);
+//        verify(customerService, times(1)).createCustomer(any());
+        verify(customerService, times(1)).findCustomer("john_doe");
+        verify(customerService, never()).setBalance(any(), anyDouble());
+    }
+
+    @Test
+    public void testCreateBill_WithMissingUsername_ShouldThrowInvalidInputException() {
+        // Arrange
+        PaymentRequest request = new PaymentRequest();
+        request.setToken("123456");
+        request.setIdPenitipan(1);
+        request.setTotal(100.0);
+        request.setMethod("PET_WALLET");
+        request.setCode("ABC123");
+
+        // Act and Assert
+        assertThrows(InvalidInputException.class, () -> paymentService.createBill(request));
+        verify(billRepository, never()).save(any());
+        verify(customerService, never()).findCustomer(any());
+        verify(customerService, never()).createCustomer(any());
+        verify(customerService, never()).setBalance(any(), anyDouble());
+    }
+
+    // Other test cases for the methods in PaymentServiceImpl can be added here...
     @Test
     void testGetAllBills() {
         List<Bill> bills = new ArrayList<>();
@@ -118,6 +224,5 @@ class PaymentServiceImplTest {
         verify(voucherRepository, times(1)).findByCode(code);
         assertEquals(expectedVoucher, actualVoucher);
     }
-
 
 }

@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.AuthTransactionDto;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.CustomerAlreadyExistException;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.CustomerDoesNotExistException;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
@@ -32,31 +33,62 @@ public class CustomerServiceImpl implements CustomerService{
         );
 
         AuthTransactionDto dto = futureDto.join();
+
+        if (dto == null) {
+//            create and return new customer
+            Customer customerAccount =  new Customer();
+            customerAccount.setUsername(request.getUsername());
+//            customerAccount.setCustomerId(dto.getIdCustomer());
+            customerAccount.setBalance(0.0);
+            customerAccount.setPaymentList(new ArrayList<>());
+            customerAccount.setTopUpList(new ArrayList<>());
+
+            customerRepository.save(customerAccount);
+
+            return customerAccount;
+        }
+
         System.out.println(dto.getIdCustomer());
 
         System.out.println(dto.getUsername());
 
         if(!isCustomerDoesNotExist(request.getUsername())) {
-            throw new CustomerDoesNotExistException(request.getUsername());
+            throw new CustomerAlreadyExistException(request.getUsername());
         }
 
         Customer customerAccount =  new Customer();
-        customerAccount.setUsername(request.getUsername());
         customerAccount.setCustomerId(dto.getIdCustomer());
+        customerAccount.setUsername(dto.getUsername());
         customerAccount.setBalance(0.0);
         customerAccount.setPaymentList(new ArrayList<>());
         customerAccount.setTopUpList(new ArrayList<>());
-
         customerRepository.save(customerAccount);
-
         return customerAccount;
+
+
+//
+//        Customer customerAccount =  new Customer();
+//        customerAccount.setUsername(request.getUsername());
+//        customerAccount.setCustomerId(dto.getIdCustomer());
+//        customerAccount.setBalance(0.0);
+//        customerAccount.setPaymentList(new ArrayList<>());
+//        customerAccount.setTopUpList(new ArrayList<>());
+//
+//        customerRepository.save(customerAccount);
+//
+//        return customerAccount;
     }
     @Override
     public Double addBalance(String username, double amount){
         Customer customer = findCustomer(username);
+
+        if(customer == null) {
+            return null;
+        }
+
         Double newCustomerBalance = customer.getBalance() + amount;
         customer.setBalance(newCustomerBalance);
-        return amount;
+        return newCustomerBalance;
     }
     @Override
     public Customer findCustomer(String username){
@@ -77,17 +109,28 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public List<TopUp> historyTopUp(String username){
         Customer customer = findCustomer(username);
-        List<TopUp>  customerLits = customer.getTopUpList();
-        System.out.println(customerLits);
-        return customerLits;
+        List<TopUp>  customerList;
+        if (customer == null) {
+            return customerList = new ArrayList<>();
+        }
+        customerList = customer.getTopUpList();
+        System.out.println(customerList);
+        return customerList;
     }
+
+    @Override
+    public void setBalance(Object any, double v) {
+        Customer customer = (Customer) any;
+        customer.setBalance(v);
+    }
+
     public boolean isCustomerDoesNotExist(String username){
         return customerRepository.findCustomersByusername(username).isEmpty();
     }
 
     private AuthTransactionDto verifyToken(String token) throws InterruptedException{
         String otherInstanceURL = "http://localhost:8080/api/v1/auth/verify-token/"+token;
-        // Panggil service arti untuk mengecek id article (post) yang bersesuaian
+
         AuthTransactionDto res = restTemplate.getForObject((otherInstanceURL), AuthTransactionDto.class);
         return res;
     }

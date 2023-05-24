@@ -22,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -53,9 +55,33 @@ public class PaymentServiceImpl implements PaymentService {
 
         Customer findCustomer = customerService.findCustomer(request.getUsername());
         if(findCustomer == null){
-            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
+//            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
+
+
+            Customer customer = new Customer();
+            customer.setUsername(request.getUsername());
+//            customer.setBalance(null);
+//            customer.setTopUpList(new ArrayList<>());
+//            customer.setPaymentList(new ArrayList<>());
+
+            var bill = Bill.builder()
+                    .idCustomer(customer.getCustomerId())
+                    .username(customer.getUsername())
+                    .idPenitipan(request.getIdPenitipan())
+                    .total(request.getTotal())
+//                    .customerBalance(customer.getBalance())
+                    .method(PaymentMethod.valueOf(request.getMethod()))
+                    .code(request.getCode())
+                    .build();
+
+            billRepository.save(bill);
+            return bill;
         }
 
+        return getBill(request, findCustomer);
+    }
+
+    private Bill getBill(PaymentRequest request, Customer findCustomer) {
         var bill = Bill.builder()
                 .idCustomer(findCustomer.getCustomerId())
                 .username(findCustomer.getUsername())
@@ -71,6 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         return bill;
     }
+
     @Override
     public Bill makePayment(Bill bill) throws InterruptedException {
         PaymentMethod method = bill.getMethod();
@@ -91,6 +118,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Bill getBillById(Integer id) {
         return billRepository.findBillById(id);
+
     }
 
     @Override
@@ -128,6 +156,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Bill> getAllBills() {
         return billRepository.findAll();
+
     }
 
     @Override

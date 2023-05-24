@@ -15,4 +15,5 @@ public interface CustomerService {
     Double addBalance(String username, double amount);
     List<TopUp> historyTopUp(String username);
 
+    void setBalance(Object any, double v);
 }
