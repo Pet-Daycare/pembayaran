@@ -5,6 +5,8 @@ import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,23 @@ public class CustomerController {
     public ResponseEntity<Customer> detailCustomer(@RequestBody CustomerRequest request){
         Customer response = customerService.findCustomer(request.getUsername());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("detail/{username}")
+    public ResponseEntity<Customer> detailCustomer(@PathVariable("username") String username){
+        try{
+            Customer response = customerService.findCustomer(username);
+//
+            return ResponseEntity.ok(response);
+//            HttpHeaders header = new HttpHeaders();
+//            header.add("decs", "Error Desc");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(null).body(response);
+        } catch (Exception err){
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("decs", "Error Desc");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
     }
 
     @GetMapping("detail/trasaction")

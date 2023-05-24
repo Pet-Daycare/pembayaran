@@ -23,11 +23,11 @@ public class TopUp {
     @Column(name= "customer_id")
     private Integer customerId;
 
-    @Enumerated(EnumType.STRING)
-    private TopUpMethod typeMethod;
+    private String typeMethod;
 
     private String timeTaken;
     private  Double nominal;
+    private double AcumulateNominal;
     private boolean validate;
 }
 
