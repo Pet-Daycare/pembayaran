@@ -135,7 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
             return bill;
         } catch (BillDoesNotExistException ex) {
             // Handle the case when the bill does not exist
-            throw new PaymentApprovalException("Failed to approve payment. Bill with ID " + id + " does not exist.", ex);
+            throw new PaymentApprovalException(id);
         }
     }
 
