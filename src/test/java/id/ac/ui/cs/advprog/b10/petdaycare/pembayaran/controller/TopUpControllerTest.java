@@ -59,24 +59,24 @@ public class TopUpControllerTest {
     public void testAprovalTopUp() {
         String id = "123456";
         String expectedResponse = "Approved";
-        when(topUpService.aprovalTopUp(id)).thenReturn(expectedResponse);
+        when(topUpService.approvalTopUp(id)).thenReturn(expectedResponse);
 
         ResponseEntity<String> response = topupController.aprovalTopUp(id);
 
         assertEquals(expectedResponse, response.getBody());
         assertEquals(200, response.getStatusCodeValue());
-        verify(topUpService, times(1)).aprovalTopUp(id);
+        verify(topUpService, times(1)).approvalTopUp(id);
     }
 
     @Test
     public void testGetAllNotAprove() {
         List<TopUp> expectedTopUps = new ArrayList<>();
-        when(topUpService.getAllNotAprove()).thenReturn(expectedTopUps);
+        when(topUpService.getAllNotApprove()).thenReturn(expectedTopUps);
 
         ResponseEntity<List<TopUp>> response = topupController.getAllNotAprove();
 
         assertEquals(expectedTopUps, response.getBody());
         assertEquals(200, response.getStatusCodeValue());
-        verify(topUpService, times(1)).getAllNotAprove();
+        verify(topUpService, times(1)).getAllNotApprove();
     }
 }
