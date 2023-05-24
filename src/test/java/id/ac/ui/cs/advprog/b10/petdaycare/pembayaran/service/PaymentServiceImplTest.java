@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.InvalidInputException;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.*;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
@@ -347,20 +347,10 @@ class PaymentServiceImplTest {
         verify(billRepository, times(1)).findAllByUsername("john");
     }
 
-        @Test
-    void testFindVoucherByCode() {
-        String code = "voucher1";
-        Voucher expectedVoucher = new Voucher(1, code, 150000, false);
 
-        when(voucherRepository.findByCode(code)).thenReturn(expectedVoucher);
-        Voucher actualVoucher = paymentService.getVoucherByCode(code);
 
-        verify(voucherRepository, times(1)).findByCode(code);
-        assertEquals(expectedVoucher, actualVoucher);
-    }
-
-        @Test
-    public void testCreateBill_WithValidRequest_ShouldCreateBill() {
+    @Test
+    void testCreateBill_WithValidRequest_ShouldCreateBill() {
         // Arrange
         PaymentRequest request = new PaymentRequest();
         request.setUsername("john_doe");
@@ -397,7 +387,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    public void testCreateBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
+    void testCreateBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
         // Arrange
         PaymentRequest request = new PaymentRequest();
         request.setUsername("john_doe");
@@ -429,7 +419,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    public void testCreateBill_WithMissingUsername_ShouldThrowInvalidInputException() {
+    void testCreateBill_WithMissingUsername_ShouldThrowInvalidInputException() {
         // Arrange
         PaymentRequest request = new PaymentRequest();
         request.setToken("123456");
@@ -462,17 +452,53 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void testFindBillById() {
-        int id = 1;
-        Bill expectedBill = new Bill(id, "lori", 1, 1, 150000, 160000, PaymentMethod.PET_WALLET, "", false, false);
+    void getBillById_ValidId_ReturnsBill() {
+        // Arrange
+        Integer billId = 123;
+        Bill expectedBill = new Bill(billId, "karin", 1, 1, 120000, 120000, PaymentMethod.PET_WALLET, "", false, false);
 
-        when(billRepository.findBillById(id)).thenReturn(expectedBill);
+        when(billRepository.findBillById(billId)).thenReturn(expectedBill);
 
-        Bill actualBill = paymentService.getBillById(id);
+        // Act
+        Bill actualBill = paymentService.getBillById(billId);
 
-        verify(billRepository, times(1)).findBillById(id);
+        // Assert
+        assertNotNull(actualBill);
         assertEquals(expectedBill, actualBill);
+        verify(billRepository, times(1)).findBillById(billId);
     }
+
+    @Test
+    void getBillById_InvalidId_ThrowsBillDoesNotExistException() {
+        // Arrange
+        Integer billId = 456;
+
+        when(billRepository.findBillById(billId)).thenReturn(null);
+
+        // Act & Assert
+        assertThrows(BillDoesNotExistException.class, () -> {
+            paymentService.getBillById(billId);
+        }, "Expected BillDoesNotExistException to be thrown");
+
+        verify(billRepository, times(1)).findBillById(billId);
+
+    }
+
+    @Test
+    void approvePayment_BillDoesNotExist_ThrowsPaymentApprovalException() {
+        // Arrange
+        Integer billId = 456;
+
+        when(billRepository.findBillById(billId)).thenReturn(null);
+
+        // Act & Assert
+        assertThrows(PaymentApprovalException.class, () -> {
+            paymentService.approvePayment(billId);
+        }, "Failed to approve payment. Bill with ID " + billId + " does not exist.");
+
+        verify(billRepository, times(1)).findBillById(billId);
+    }
+
     @Test
     void testGetAllCoupons() {
         List<Coupon> coupons = new ArrayList<>();
@@ -489,18 +515,36 @@ class PaymentServiceImplTest {
 
     }
     @Test
-    void testFindCouponByCode() {
-        String code = "coupon1";
-        Coupon expectedCoupon = new Coupon(1, code, 50, false);
+    void getCouponByCode_ValidCode_ReturnsCoupon() {
+        // Arrange
+        String couponCode = "COUPON123";
+        Coupon expectedCoupon = new Coupon(1, couponCode, 10, false);
 
-        when(couponRepository.findByCode(code)).thenReturn(expectedCoupon);
+        when(couponRepository.findByCode(couponCode)).thenReturn(expectedCoupon);
 
-        Coupon actualCoupon = paymentService.getCouponByCode(code);
+        // Act
+        Coupon actualCoupon = paymentService.getCouponByCode(couponCode);
 
-        verify(couponRepository, times(1)).findByCode(code);
+        // Assert
+        assertNotNull(actualCoupon);
         assertEquals(expectedCoupon, actualCoupon);
+        verify(couponRepository, times(1)).findByCode(couponCode);
     }
 
+    @Test
+    void getCouponByCode_InvalidCode_ThrowsCouponDoesNotExistException() {
+        // Arrange
+        String couponCode = "INVALID";
+
+        when(couponRepository.findByCode(couponCode)).thenReturn(null);
+
+        // Act & Assert
+        assertThrows(CouponDoesNotExistException.class, () -> {
+            paymentService.getCouponByCode(couponCode);
+        });
+
+        verify(couponRepository, times(1)).findByCode(couponCode);
+    }
     @Test
     void testGetAllVouchers() {
         List<Voucher> vouchers = new ArrayList<>();
@@ -515,5 +559,37 @@ class PaymentServiceImplTest {
         verify(voucherRepository, times(1)).findAll();
         assertEquals(2, actualvouchers.size());
 
+    }
+
+    @Test
+    void getVoucherByCode_ValidCode_ReturnsVoucher() {
+        // Arrange
+        String voucherCode = "VOUCHER123";
+        Voucher expectedVoucher = new Voucher(1, voucherCode, 150000, false);
+
+        when(voucherRepository.findByCode(voucherCode)).thenReturn(expectedVoucher);
+
+        // Act
+        Voucher actualVoucher = paymentService.getVoucherByCode(voucherCode);
+
+        // Assert
+        assertNotNull(actualVoucher);
+        assertEquals(expectedVoucher, actualVoucher);
+        verify(voucherRepository, times(1)).findByCode(voucherCode);
+    }
+
+    @Test
+    void getVoucherByCode_InvalidCode_ThrowsVoucherDoesNotExistException() {
+        // Arrange
+        String voucherCode = "INVALID";
+
+        when(voucherRepository.findByCode(voucherCode)).thenReturn(null);
+
+        // Act & Assert
+        assertThrows(VoucherDoesNotExistException.class, () -> {
+            paymentService.getVoucherByCode(voucherCode);
+        });
+
+        verify(voucherRepository, times(1)).findByCode(voucherCode);
     }
 }
