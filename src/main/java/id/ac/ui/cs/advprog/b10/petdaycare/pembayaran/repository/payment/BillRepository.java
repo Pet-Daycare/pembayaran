@@ -16,4 +16,6 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     @Transactional
     List<Bill> findAllByVerified(boolean condition);
+
+    List<Bill> findAllByUsername(String john);
 }

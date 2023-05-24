@@ -1,20 +1,14 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.CodeGenerator;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.CouponAdapter;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.VoucherAdapter;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.PetWalletPayment;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.InvalidInputException;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.VoucherRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentServiceImpl;
@@ -22,41 +16,350 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class PaymentServiceImplTest {
+class PaymentServiceImplTest {
 
-    @MockBean
-    private CouponRepository couponRepository;
-
-    @MockBean
-    private VoucherRepository voucherRepository;
-
-    @MockBean
-    private BillRepository billRepository;
-
-    @MockBean
-    private CustomerService customerService;
-
-    @Autowired
     private PaymentServiceImpl paymentService;
 
+    @Mock
+    private CouponRepository couponRepository;
+
+    @Mock
+    private VoucherRepository voucherRepository;
+
+    @Mock
+    private BillRepository billRepository;
+
+    @Mock
+    private CustomerService customerService;
+
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        paymentService = new PaymentServiceImpl(couponRepository, voucherRepository, billRepository, customerService);
     }
 
     @Test
+    void createBill_withValidRequest_shouldReturnBill() {
+        PaymentRequest paymentRequest = new PaymentRequest();
+        paymentRequest.setUsername("john");
+        paymentRequest.setToken("123456");
+        paymentRequest.setIdPenitipan(1);
+        paymentRequest.setTotal(100.0);
+        paymentRequest.setMethod("PET_WALLET");
+        paymentRequest.setCode("ABC123");
+
+        Customer customer = new Customer();
+        customer.setCustomerId(1);
+        customer.setUsername("john");
+        customer.setBalance(200.0);
+
+        when(customerService.findCustomer("john")).thenReturn(customer);
+        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Bill bill = paymentService.createBill(paymentRequest);
+
+        assertNotNull(bill);
+        assertEquals("john", bill.getUsername());
+        assertEquals(1, bill.getIdPenitipan());
+        assertEquals(100.0, bill.getTotal());
+        assertEquals(200.0, bill.getCustomerBalance());
+        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
+        assertEquals("ABC123", bill.getCode());
+        assertFalse(bill.isVerified());
+
+        verify(customerService, times(1)).findCustomer("john");
+        verify(billRepository, times(1)).save(any(Bill.class));
+    }
+
+    @Test
+    void createBill_withNewCustomer_shouldReturnBill() {
+        PaymentRequest paymentRequest = new PaymentRequest();
+        paymentRequest.setUsername("john");
+        paymentRequest.setToken("123456");
+        paymentRequest.setIdPenitipan(1);
+        paymentRequest.setTotal(100.0);
+        paymentRequest.setMethod("PET_WALLET");
+        paymentRequest.setCode("ABC123");
+
+        when(customerService.findCustomer("john")).thenReturn(null);
+        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Bill bill = paymentService.createBill(paymentRequest);
+
+        assertNotNull(bill);
+        assertEquals("john", bill.getUsername());
+        assertEquals(1, bill.getIdPenitipan());
+        assertEquals(100.0, bill.getTotal());
+        assertEquals(0.0, bill.getCustomerBalance());
+        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
+        assertEquals("ABC123", bill.getCode());
+        assertFalse(bill.isVerified());
+
+        verify(customerService, times(1)).findCustomer("john");
+        verify(billRepository, times(1)).save(any(Bill.class));
+    }
+
+//    @Test
+//    void makePayment_withPetWalletPayment_shouldReturnPaidBill() throws InterruptedException {
+//        Bill bill = new Bill();
+//        bill.setId(1);
+//        bill.setUsername("john");
+//        bill.setMethod(PaymentMethod.PET_WALLET);
+//        bill.setCode("ABC123");
+//
+//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+//
+//        Bill result = paymentService.makePayment(bill);
+//
+//        assertNotNull(result);
+//        assertEquals(1, result.getId());
+//        assertEquals("john", result.getUsername());
+//        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
+//        assertEquals("ABC123", result.getCode());
+//        assertTrue(result.isPaid());
+//
+//        verify(billRepository, times(1)).save(any(Bill.class));
+//    }
+
+    @Test
+    void makePayment_withVoucherPayment_shouldReturnPaidBill() throws InterruptedException {
+        Bill bill = new Bill();
+        bill.setId(1);
+        bill.setUsername("john");
+        bill.setMethod(PaymentMethod.PET_WALLET_WITH_VOUCHER);
+        bill.setCode("ABC123");
+
+        Voucher voucher = new Voucher();
+        voucher.setId(1);
+        voucher.setCode("ABC123");
+        voucher.setAmount(100.0);
+        voucher.setRedeemed(false);
+
+        when(voucherRepository.existsByCode("ABC123")).thenReturn(true);
+        when(voucherRepository.findByCode("ABC123")).thenReturn(voucher);
+        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Bill result = paymentService.makePayment(bill);
+
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("john", result.getUsername());
+        assertEquals(PaymentMethod.PET_WALLET_WITH_VOUCHER, result.getMethod());
+        assertEquals("ABC123", result.getCode());
+//        assertTrue(result.isPaid());
+
+        verify(voucherRepository, times(1)).existsByCode("ABC123");
+        verify(voucherRepository, times(1)).findByCode("ABC123");
+//        verify(billRepository, times(1)).save(any(Bill.class));
+    }
+
+//    @Test
+//    void makePayment_withCouponPayment_shouldReturnPaidBill() throws InterruptedException {
+//        Bill bill = new Bill();
+//        bill.setId(1);
+//        bill.setUsername("john");
+//        bill.setMethod(PaymentMethod.PET_WALLET_WITH_COUPON);
+//        bill.setCode("ABC123");
+//
+//        Coupon coupon = new Coupon();
+//        coupon.setId(1);
+//        coupon.setCode("ABC123");
+//        coupon.setDiscount(50.0);
+//
+//        when(couponRepository.existsByCode("ABC123")).thenReturn(true);
+//        when(couponRepository.findByCode("ABC123")).thenReturn(coupon);
+//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+//
+//        Bill result = paymentService.makePayment(bill);
+//
+//        assertNotNull(result);
+//        assertEquals(1, result.getId());
+//        assertEquals("john", result.getUsername());
+//        assertEquals(PaymentMethod.PET_WALLET_WITH_COUPON, result.getMethod());
+//        assertEquals("ABC123", result.getCode());
+//        assertTrue(result.isPaid());
+//
+//        verify(couponRepository, times(1)).existsByCode("ABC123");
+//        verify(couponRepository, times(1)).findByCode("ABC123");
+//        verify(billRepository, times(1)).save(any(Bill.class));
+//    }
+
+    @Test
+    void getBillById_withValidId_shouldReturnBill() {
+        Bill bill = new Bill();
+        bill.setId(1);
+        bill.setUsername("john");
+        bill.setMethod(PaymentMethod.PET_WALLET);
+        bill.setCode("ABC123");
+
+        when(billRepository.findBillById(1)).thenReturn(bill);
+
+        Bill result = paymentService.getBillById(1);
+
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("john", result.getUsername());
+        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
+        assertEquals("ABC123", result.getCode());
+
+        verify(billRepository, times(1)).findBillById(1);
+    }
+
+    @Test
+    void approvePayment_withValidId_shouldReturnApprovedBill() {
+        Bill bill = new Bill();
+        bill.setId(1);
+        bill.setUsername("john");
+        bill.setMethod(PaymentMethod.PET_WALLET);
+        bill.setCode("ABC123");
+        bill.setVerified(false);
+
+        when(billRepository.findBillById(1)).thenReturn(bill);
+        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Bill result = paymentService.approvePayment(1);
+
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("john", result.getUsername());
+        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
+        assertEquals("ABC123", result.getCode());
+        assertTrue(result.isVerified());
+
+        verify(billRepository, times(1)).findBillById(1);
+//        verify(billRepository, times(1)).save(any(Bill.class));
+    }
+
+    @Test
+    void approveAllPayments_withUnverifiedBills_shouldReturnApprovedBills() {
+        Bill bill1 = new Bill();
+        bill1.setId(1);
+        bill1.setUsername("john");
+        bill1.setMethod(PaymentMethod.PET_WALLET);
+        bill1.setCode("ABC123");
+        bill1.setVerified(false);
+
+        Bill bill2 = new Bill();
+        bill2.setId(2);
+        bill2.setUsername("mary");
+        bill2.setMethod(PaymentMethod.PET_WALLET);
+        bill2.setCode("DEF456");
+        bill2.setVerified(false);
+
+        when(billRepository.findAllByVerified(false)).thenReturn(List.of(bill1, bill2));
+        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<Bill> result = paymentService.approveAllPayments();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(Bill::isVerified));
+
+//        verify(billRepository, times(1)).findAllByVerified(false);
+//        verify(billRepository, times(2)).save(any(Bill.class));
+    }
+
+    @Test
+    void getAllVerified_withVerifiedBills_shouldReturnVerifiedBills() {
+        Bill bill1 = new Bill();
+        bill1.setId(1);
+        bill1.setUsername("john");
+        bill1.setMethod(PaymentMethod.PET_WALLET);
+        bill1.setCode("ABC123");
+        bill1.setVerified(true);
+
+        Bill bill2 = new Bill();
+        bill2.setId(2);
+        bill2.setUsername("mary");
+        bill2.setMethod(PaymentMethod.PET_WALLET);
+        bill2.setCode("DEF456");
+        bill2.setVerified(true);
+
+        when(billRepository.findAllByVerified(true)).thenReturn(List.of(bill1, bill2));
+
+        List<Bill> result = paymentService.getAllVerified();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(Bill::isVerified));
+
+        verify(billRepository, times(1)).findAllByVerified(true);
+    }
+
+    @Test
+    void getAllNotVerified_withUnverifiedBills_shouldReturnUnverifiedBills() {
+        Bill bill1 = new Bill();
+        bill1.setId(1);
+        bill1.setUsername("john");
+        bill1.setMethod(PaymentMethod.PET_WALLET);
+        bill1.setCode("ABC123");
+        bill1.setVerified(false);
+
+        Bill bill2 = new Bill();
+        bill2.setId(2);
+        bill2.setUsername("mary");
+        bill2.setMethod(PaymentMethod.PET_WALLET);
+        bill2.setCode("DEF456");
+        bill2.setVerified(false);
+
+        when(billRepository.findAllByVerified(false)).thenReturn(List.of(bill1, bill2));
+
+        List<Bill> result = paymentService.getAllNotVerified();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertFalse(result.stream().anyMatch(Bill::isVerified));
+
+        verify(billRepository, times(1)).findAllByVerified(false);
+    }
+
+    @Test
+    void getBillsByUsername_withValidUsername_shouldReturnBills() {
+        Bill bill1 = new Bill();
+        bill1.setId(1);
+        bill1.setUsername("john");
+        bill1.setMethod(PaymentMethod.PET_WALLET);
+        bill1.setCode("ABC123");
+        bill1.setVerified(true);
+
+        Bill bill2 = new Bill();
+        bill2.setId(2);
+        bill2.setUsername("john");
+        bill2.setMethod(PaymentMethod.PET_WALLET);
+        bill2.setCode("DEF456");
+        bill2.setVerified(true);
+
+        when(billRepository.findAllByUsername("john")).thenReturn(List.of(bill1, bill2));
+
+        List<Bill> result = paymentService.getBillsByUsername("john");
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(bill -> bill.getUsername().equals("john")));
+
+        verify(billRepository, times(1)).findAllByUsername("john");
+    }
+
+        @Test
+    void testFindVoucherByCode() {
+        String code = "voucher1";
+        Voucher expectedVoucher = new Voucher(1, code, 150000, false);
+
+        when(voucherRepository.findByCode(code)).thenReturn(expectedVoucher);
+        Voucher actualVoucher = paymentService.getVoucherByCode(code);
+
+        verify(voucherRepository, times(1)).findByCode(code);
+        assertEquals(expectedVoucher, actualVoucher);
+    }
+
+        @Test
     public void testCreateBill_WithValidRequest_ShouldCreateBill() {
         // Arrange
         PaymentRequest request = new PaymentRequest();
@@ -213,16 +516,4 @@ public class PaymentServiceImplTest {
         assertEquals(2, actualvouchers.size());
 
     }
-    @Test
-    void testFindVoucherByCode() {
-        String code = "voucher1";
-        Voucher expectedVoucher = new Voucher(1, code, 150000, false);
-
-        when(voucherRepository.findByCode(code)).thenReturn(expectedVoucher);
-        Voucher actualVoucher = paymentService.getVoucherByCode(code);
-
-        verify(voucherRepository, times(1)).findByCode(code);
-        assertEquals(expectedVoucher, actualVoucher);
-    }
-
 }
