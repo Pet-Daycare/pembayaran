@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface PaymentService {
     Bill createBill(PaymentRequest request);
+    Bill payRefund(Bill bill);
     Bill makePayment(Bill bill) throws InterruptedException;
     Bill approvePayment(Integer id);
     List<Bill> approveAllPayments();

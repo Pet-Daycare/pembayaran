@@ -81,6 +81,16 @@ public class PaymentServiceImpl implements PaymentService {
         return getBill(request, findCustomer);
     }
 
+    @Override
+    public Bill payRefund(Bill bill) {
+        Double total = bill.getTotal();
+        // total in negative amount
+        bill.setCustomerBalance(bill.getCustomerBalance() - total);
+        bill.setPaid(true);
+        bill.setVerified(true);
+        return bill;
+    }
+
     private Bill getBill(PaymentRequest request, Customer findCustomer) {
         var bill = Bill.builder()
                 .idCustomer(findCustomer.getCustomerId())
