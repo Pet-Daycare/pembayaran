@@ -8,7 +8,9 @@ import java.util.List;
 public interface TopUpService {
     TopUp createTopUpRequest(TopUpRequest request);
     TopUp getDetailTopUp(String id);
-    String aprovalTopUp(String id);
-    List<TopUp> getAllNotAprove();
+    String approvalTopUp(String id);
+    List<TopUp> getAllNotApprove();
+    List<TopUp> getAllTopup();
+    List<TopUp> getAllApprove();
 
 }

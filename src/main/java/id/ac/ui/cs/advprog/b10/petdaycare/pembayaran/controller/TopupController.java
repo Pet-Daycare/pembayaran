@@ -14,26 +14,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TopupController {
 
-    private final TopUpService topUpServcie;
+    private final TopUpService topUpService;
 
     @PostMapping("/create")
     public ResponseEntity<TopUp> createTopUpRequest(@RequestBody TopUpRequest request){
-        return ResponseEntity.ok(topUpServcie.createTopUpRequest(request));
+        return ResponseEntity.ok(topUpService.createTopUpRequest(request));
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<TopUp> getDetailTopUp(@PathVariable String id){
-        return ResponseEntity.ok(topUpServcie.getDetailTopUp(id));
+        return ResponseEntity.ok(topUpService.getDetailTopUp(id));
     }
 
+    @GetMapping("/detail/all")
+    public ResponseEntity<List<TopUp>> getDetailTopUp(){
+        return ResponseEntity.ok(topUpService.getAllTopup());
+    }
     @PutMapping("/detail/aproval/{id}")
     public ResponseEntity<String> aprovalTopUp(@PathVariable String id){
-        return ResponseEntity.ok(topUpServcie.aprovalTopUp(id));
+        return ResponseEntity.ok(topUpService.approvalTopUp(id));
     }
 
     @GetMapping("/detail/not-aproval/")
     public ResponseEntity<List<TopUp>> getAllNotAprove(){
-        return ResponseEntity.ok(topUpServcie.getAllNotAprove());
+        return ResponseEntity.ok(topUpService.getAllNotApprove());
+    }
+    @GetMapping("/detail/aproval/")
+    public ResponseEntity<List<TopUp>> getAllApprove(){
+        return ResponseEntity.ok(topUpService.getAllApprove());
     }
 
 
