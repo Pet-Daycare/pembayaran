@@ -17,11 +17,17 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-
     @PostMapping("/customer/pay")
     public ResponseEntity<Bill> createPayment(@RequestBody PaymentRequest request) throws InterruptedException {
         Bill bill = paymentService.createBill(request);
         bill = paymentService.makePayment(bill);
+        return ResponseEntity.ok(bill);
+    }
+
+    @PostMapping("/customer/refund")
+    public ResponseEntity<Bill> createRefund(@RequestBody PaymentRequest request) throws InterruptedException {
+        Bill bill = paymentService.createBill(request);
+        bill = paymentService.payRefund(bill);
         return ResponseEntity.ok(bill);
     }
 
