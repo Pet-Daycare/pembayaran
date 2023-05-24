@@ -58,7 +58,7 @@ public class TopUpServiceImpl implements TopUpService{
     }
 
     @Override
-    public String aprovalTopUp(String id){
+    public String approvalTopUp(String id){
         TopUp topUpAprove = findTopUpId(id);
 
         if(topUpAprove.isValidate()){
@@ -71,13 +71,21 @@ public class TopUpServiceImpl implements TopUpService{
     }
 
     @Override
-    public List<TopUp> getAllNotAprove() {
+    public List<TopUp> getAllNotApprove() {
         return topUpRepository.findAllByValidate(false);
     }
 
+    @Override
+    public List<TopUp> getAllApprove() {
+        return topUpRepository.findAllByValidate(true);
+    }
+
+    @Override
+    public List<TopUp> getAllTopup() {
+        return topUpRepository.findAll();
+    }
 
     public TopUp findTopUpId(String id){
-        System.out.println(topUpRepository.findAll());
         if(topUpRepository.findToUpById(id).isEmpty()){
             return null;
         }
