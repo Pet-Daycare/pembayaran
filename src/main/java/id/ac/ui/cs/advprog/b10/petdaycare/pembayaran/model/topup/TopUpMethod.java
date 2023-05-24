@@ -6,7 +6,7 @@ public enum TopUpMethod {
 
     BNI_TRANSFER,
 
-    GOPAY_TRASFER,
+    GOPAY_TRANSFER,
 
     OVO_TRANSFER;
 
