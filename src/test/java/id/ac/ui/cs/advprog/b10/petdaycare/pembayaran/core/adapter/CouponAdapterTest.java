@@ -1,3 +1,5 @@
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter;
+
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.CouponAdapter;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.Payment;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
