@@ -8,7 +8,7 @@ import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentReq
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.PetWalletPayment;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.InvalidInputException;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.*;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
@@ -117,19 +117,26 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Bill getBillById(Integer id) {
-        return billRepository.findBillById(id);
-
+        Bill bill = billRepository.findBillById(id);
+        if (bill == null) {
+            throw new BillDoesNotExistException(id);
+        }
+        return bill;
     }
 
     @Override
     public Bill approvePayment(Integer id) {
-        Bill bill = getBillById(id);
+        try {
+            Bill bill = getBillById(id); // Retrieve the bill by ID
 
-//        Customer customer = customerService.findCustomer(bill.getUsername());
-//        customer.setBalance(customer.getBalance() - bill.getTotal());
+            // Update the bill's verification status
+            bill.setVerified(true);
 
-        bill.setVerified(true);
-        return bill;
+            return bill;
+        } catch (BillDoesNotExistException ex) {
+            // Handle the case when the bill does not exist
+            throw new PaymentApprovalException("Failed to approve payment. Bill with ID " + id + " does not exist.", ex);
+        }
     }
 
     @Override
@@ -170,7 +177,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Coupon getCouponByCode(String code) {
-        return couponRepository.findByCode(code);
+        Coupon coupon = couponRepository.findByCode(code);
+        if (coupon == null) {
+            throw new CouponDoesNotExistException(code);
+        }
+        return coupon;
     }
 
     @Override
@@ -189,8 +200,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Voucher getVoucherByCode(String code) {
-        return voucherRepository.findByCode(code);
+        Voucher voucher = voucherRepository.findByCode(code);
+        if (voucher == null) {
+            throw new VoucherDoesNotExistException(code);
+        }
+        return voucher;
     }
+
 
     @Override
     public List<Voucher> getAllVouchers() {
