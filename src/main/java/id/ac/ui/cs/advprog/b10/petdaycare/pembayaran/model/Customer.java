@@ -35,5 +35,8 @@ public class Customer {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private List<Bill> paymentList;
+
+    public void setToken(String abc123) {
+    }
 }
 

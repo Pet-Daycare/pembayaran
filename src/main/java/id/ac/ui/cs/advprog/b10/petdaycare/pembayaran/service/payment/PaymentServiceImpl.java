@@ -197,6 +197,11 @@ public class PaymentServiceImpl implements PaymentService {
         return voucherRepository.findAll();
     }
 
+    @Override
+    public List<Bill> getBillsByUsername(String john) {
+        return billRepository.findAllByUsername(john);
+    }
+
 
     public boolean addBillToCustomer(Customer customer, Bill bill){
         List<Bill> customerListPayment = null;

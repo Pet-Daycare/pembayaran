@@ -24,4 +24,5 @@ public interface PaymentService {
     Voucher getVoucherByCode(String code);
     List<Voucher> getAllVouchers();
 
+    List<Bill> getBillsByUsername(String john);
 }
