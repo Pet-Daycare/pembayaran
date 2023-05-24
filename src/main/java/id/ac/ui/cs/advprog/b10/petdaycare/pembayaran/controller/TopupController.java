@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.TopUpRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.AprovalTopUpResponse;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.topup.TopUpService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class TopupController {
         return ResponseEntity.ok(topUpService.getAllTopup());
     }
     @PutMapping("/detail/aproval/{id}")
-    public ResponseEntity<String> aprovalTopUp(@PathVariable String id){
+    public ResponseEntity<AprovalTopUpResponse> aprovalTopUp(@PathVariable String id){
         return ResponseEntity.ok(topUpService.approvalTopUp(id));
     }
 

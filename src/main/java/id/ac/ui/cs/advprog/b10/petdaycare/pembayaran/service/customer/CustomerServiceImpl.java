@@ -26,7 +26,6 @@ public class CustomerServiceImpl implements CustomerService{
     TopUpService topUpService;
 
     @Override
-    @Async
     public Customer createCustomer(CustomerRequest request){
         CompletableFuture<AuthTransactionDto> futureDto = CompletableFuture.supplyAsync(
                 getAuthTransactionDtoSupplier(request.getToken())
