@@ -11,9 +11,9 @@ import java.util.List;
 public interface PaymentService {
     Bill createBill(PaymentRequest request);
     Bill makePayment(Bill bill) throws InterruptedException;
-    Bill approvePayment(String id);
+    Bill approvePayment(Integer id);
     List<Bill> approveAllPayments();
-    Bill getBillById(String id);
+    Bill getBillById(Integer id);
     List<Bill> getAllBills();
     List<Bill> getAllVerified();
     List<Bill> getAllNotVerified();
