@@ -110,7 +110,7 @@ public class CustomerServiceImpl implements CustomerService{
         Customer customer = findCustomer(username);
         List<TopUp>  customerList;
         if (customer == null) {
-            return customerList = new ArrayList<>();
+            return new ArrayList<>();
         }
         customerList = customer.getTopUpList();
         return customerList;
