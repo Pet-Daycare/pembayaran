@@ -19,8 +19,8 @@ public class TopUpTest {
         topUp.setCustomerId(1);
         assertEquals(1, topUp.getCustomerId());
 
-        topUp.setTypeMethod(TopUpMethod.GOPAY_TRANSFER);
-        assertEquals(TopUpMethod.GOPAY_TRANSFER, topUp.getTypeMethod());
+        topUp.setTypeMethod("GOPAY");
+        assertEquals(TopUpTypeBrand.GOPAY, TopUpTypeBrand.valueOf(topUp.getTypeMethod()));
 
         topUp.setTimeTaken("10:30 AM");
         assertEquals("10:30 AM", topUp.getTimeTaken());

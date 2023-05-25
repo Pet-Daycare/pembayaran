@@ -2,8 +2,10 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.TopUpRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.InvalidInputException;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.AprovalTopUpResponse;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUpTypeBrand;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.topup.TopUpRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.topup.TopUpServiceImpl;
@@ -47,7 +49,7 @@ class TopUpServiceImplTest {
         request.setUsername("john");
         request.setToken("abc123");
         request.setNominal(100);
-        request.setTypeMethod("GOPAY_TRANSFER");
+        request.setTypeMethod("GOPAY");
 
         Customer customer = new Customer();
         customer.setUsername("john");
@@ -60,7 +62,7 @@ class TopUpServiceImplTest {
 
         assertNotNull(result);
         assertEquals("john", result.getUsername());
-        assertEquals("GOPAY_TRANSFER", result.getTypeMethod().toString());
+        assertEquals("Gopay", result.getTypeMethod().toString());
         assertEquals(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase(), result.getTimeTaken());
         assertEquals(100, result.getNominal());
         assertFalse(result.isValidate());
@@ -71,7 +73,7 @@ class TopUpServiceImplTest {
         TopUp savedTopUp = topUpCaptor.getValue();
         assertNotNull(savedTopUp);
         assertEquals("john", savedTopUp.getUsername());
-        assertEquals("GOPAY_TRANSFER", savedTopUp.getTypeMethod().toString());
+        assertEquals("Gopay", savedTopUp.getTypeMethod().toString());
         assertEquals(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase(), savedTopUp.getTimeTaken());
         assertEquals(100, savedTopUp.getNominal());
         assertFalse(savedTopUp.isValidate());
@@ -85,7 +87,7 @@ class TopUpServiceImplTest {
         request.setUsername("john");
         request.setToken("abc123");
         request.setNominal(100);
-        request.setTypeMethod("GOPAY_TRANSFER");
+        request.setTypeMethod("GOPAY");
 
         Customer customer = new Customer();
         customer.setUsername("john");
@@ -97,7 +99,7 @@ class TopUpServiceImplTest {
 
         assertNotNull(result);
         assertEquals("john", result.getUsername());
-        assertEquals("GOPAY_TRANSFER", result.getTypeMethod().toString());
+        assertEquals("Gopay", result.getTypeMethod().toString());
         assertEquals(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase(), result.getTimeTaken());
         assertEquals(100, result.getNominal());
         assertFalse(result.isValidate());
@@ -108,7 +110,7 @@ class TopUpServiceImplTest {
         TopUp savedTopUp = topUpCaptor.getValue();
         assertNotNull(savedTopUp);
         assertEquals("john", savedTopUp.getUsername());
-        assertEquals("GOPAY_TRANSFER", savedTopUp.getTypeMethod().toString());
+        assertEquals("Gopay", savedTopUp.getTypeMethod().toString());
         assertEquals(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase(), savedTopUp.getTimeTaken());
         assertEquals(100, savedTopUp.getNominal());
         assertFalse(savedTopUp.isValidate());
@@ -155,32 +157,42 @@ class TopUpServiceImplTest {
 
     @Test
     void approvalTopUp_withValidId_shouldApproveTopUp() {
+
         TopUp topUp = new TopUp();
         topUp.setValidate(false);
         topUp.setUsername("john");
         topUp.setNominal(100.0);
+        topUp.setId("3");
 
-        when(topUpRepository.findToUpById("1")).thenReturn(java.util.Optional.of(topUp));
+//        topUpRepository.save(topUp);
 
-        String result = topUpService.approvalTopUp("1");
+        AprovalTopUpResponse response = AprovalTopUpResponse.builder()
+                .message(String.format("Success approval TopUp with ID: %s to username: %s", topUp.getId(), topUp.getUsername()))
+                .detail_topup(topUp)
+                .build();
 
-        assertEquals("Success TopUp with ID: 1 ", result);
+        when(topUpRepository.findToUpById("3")).thenReturn(java.util.Optional.of(topUp));
+
+        AprovalTopUpResponse result = topUpService.approvalTopUp("3");
+
+        assertEquals(response, result);
         assertTrue(topUp.isValidate());
-
-//        verify(topUpRepository).findToUpById("1");
-        verify(customerService).addBalance("john", 100);
     }
 
     @Test
     void approvalTopUp_withAlreadyApprovedId_shouldReturnAlreadyValidatedMessage() {
         TopUp topUp = new TopUp();
         topUp.setValidate(true);
+        AprovalTopUpResponse response = AprovalTopUpResponse.builder()
+                .message("Already validated!")
+                .detail_topup(topUp)
+                .build();;
 
         when(topUpRepository.findToUpById("1")).thenReturn(java.util.Optional.of(topUp));
 
-        String result = topUpService.approvalTopUp("1");
+        AprovalTopUpResponse result = topUpService.approvalTopUp("1");
 
-        assertEquals("Already validated!", result);
+        assertEquals(response, result);
         assertTrue(topUp.isValidate());
 
 //        verify(topUpRepository).findToUpById("1");

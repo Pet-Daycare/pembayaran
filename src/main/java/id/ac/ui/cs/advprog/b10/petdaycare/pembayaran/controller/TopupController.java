@@ -32,7 +32,7 @@ public class TopupController {
         return ResponseEntity.ok(topUpService.getAllTopup());
     }
     @PutMapping("/detail/aproval/{id}")
-    public ResponseEntity<AprovalTopUpResponse> aprovalTopUp(@PathVariable String id){
+    public ResponseEntity<AprovalTopUpResponse> approvalTopup(@PathVariable String id){
         return ResponseEntity.ok(topUpService.approvalTopUp(id));
     }
 

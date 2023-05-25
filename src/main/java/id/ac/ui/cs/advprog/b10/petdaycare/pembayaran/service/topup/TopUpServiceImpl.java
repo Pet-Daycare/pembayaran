@@ -69,17 +69,23 @@ public class TopUpServiceImpl implements TopUpService{
 
     @Override
     public AprovalTopUpResponse approvalTopUp(String id){
+
         TopUp topUpAprove = findTopUpId(id);
+
+        if(topUpAprove.isValidate()){
+            return AprovalTopUpResponse.builder()
+                    .message("Already validated!")
+                    .detail_topup(topUpAprove)
+                    .build();
+        }
+
         topUpAprove.setValidate(true);
         customerService.addBalance(topUpAprove.getUsername(), topUpAprove.getAcumulateNominal());
+
         return AprovalTopUpResponse.builder()
                 .message(String.format("Success approval TopUp with ID: %s to username: %s", id, topUpAprove.getUsername()))
                 .detail_topup(topUpAprove)
                 .build();
-//        if(topUpAprove.isValidate()){
-//            return "Already validated!";
-//        }
-
     }
 
     @Override
