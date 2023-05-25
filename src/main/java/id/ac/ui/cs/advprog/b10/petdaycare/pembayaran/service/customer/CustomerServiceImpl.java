@@ -113,7 +113,6 @@ public class CustomerServiceImpl implements CustomerService{
             return customerList = new ArrayList<>();
         }
         customerList = customer.getTopUpList();
-        System.out.println(customerList);
         return customerList;
     }
 

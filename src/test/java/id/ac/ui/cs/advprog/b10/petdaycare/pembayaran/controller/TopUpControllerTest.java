@@ -2,7 +2,9 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller.TopupController;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.TopUpRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.AprovalTopUpResponse;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.topup.TopUpRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.topup.TopUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,9 @@ public class TopUpControllerTest {
 
     @Mock
     private TopUpService topUpService;
+
+    @Mock
+    private TopUpRepository topupRepo;
 
     @BeforeEach
     public void setUp() {
@@ -57,11 +62,20 @@ public class TopUpControllerTest {
 
     @Test
     public void testAprovalTopUp() {
+        TopUp topup = new TopUp();
+        topup.setId("123456");
         String id = "123456";
-        String expectedResponse = "Approved";
-        when(topUpService.approvalTopUp(id)).thenReturn(expectedResponse);
+        AprovalTopUpResponse expectedResponse = AprovalTopUpResponse.builder()
+                .message(String.format("Success approval TopUp with ID: %s to username: %s", id, topup.getUsername()))
+                .detail_topup(topup)
+                .build();
+        when(topUpService.approvalTopUp(id)).thenReturn(
+                AprovalTopUpResponse.builder()
+                        .message(String.format("Success approval TopUp with ID: %s to username: %s", id, topup.getUsername()))
+                        .detail_topup(topup)
+                        .build());
 
-        ResponseEntity<String> response = topupController.aprovalTopUp(id);
+        ResponseEntity<AprovalTopUpResponse> response = topupController.approvalTopup(id);
 
         assertEquals(expectedResponse, response.getBody());
         assertEquals(200, response.getStatusCodeValue());
