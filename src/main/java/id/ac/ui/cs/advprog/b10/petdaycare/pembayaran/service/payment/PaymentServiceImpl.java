@@ -55,21 +55,21 @@ public class PaymentServiceImpl implements PaymentService {
 
         Customer findCustomer = customerService.findCustomer(request.getUsername());
         if(findCustomer == null){
-//            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
+            findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
 
 
-            Customer customer = new Customer();
-            customer.setUsername(request.getUsername());
-//            customer.setBalance(null);
+//            Customer customer = new Customer();
+//            customer.setUsername(request.getUsername());
+//            customer.setBalance(0.0);
 //            customer.setTopUpList(new ArrayList<>());
 //            customer.setPaymentList(new ArrayList<>());
 
             var bill = Bill.builder()
-                    .idCustomer(customer.getCustomerId())
-                    .username(customer.getUsername())
+                    .idCustomer(findCustomer.getCustomerId())
+                    .username(findCustomer.getUsername())
                     .idPenitipan(request.getIdPenitipan())
                     .total(request.getTotal())
-//                    .customerBalance(customer.getBalance())
+                    .customerBalance(findCustomer.getBalance())
                     .method(PaymentMethod.valueOf(request.getMethod()))
                     .code(request.getCode())
                     .build();
