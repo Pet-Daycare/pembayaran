@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,24 @@ public class PaymentController {
 
     @PostMapping("/customer/pay")
     public ResponseEntity<Bill> createPayment(@RequestBody PaymentRequest request) throws InterruptedException {
+        Bill bill = paymentService.createBill(request);
+        bill = paymentService.makePayment(bill);
+        return ResponseEntity.ok(bill);
+    }
+
+    @PostMapping("/customer/pay/frontend")
+    public ResponseEntity<Bill> createPayment(@RequestParam Integer idPenitipan, @RequestParam Double total,
+                                              @RequestParam String username, @RequestParam String token,
+                                              @RequestParam String method, @RequestParam String code) throws InterruptedException {
+        PaymentRequest request = new PaymentRequest();
+        request.setIdPenitipan(idPenitipan);
+        request.setMethod(method);
+        request.setUsername(username);
+        request.setTotal(total);
+        request.setToken(token);
+        request.setCode(code);
+
+
         Bill bill = paymentService.createBill(request);
         bill = paymentService.makePayment(bill);
         return ResponseEntity.ok(bill);

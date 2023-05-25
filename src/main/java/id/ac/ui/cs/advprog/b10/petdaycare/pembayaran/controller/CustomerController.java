@@ -50,6 +50,13 @@ public class CustomerController {
         List<TopUp> response = customerService.historyTopUp(request.getUsername());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("detail/frontend")
+    public ResponseEntity<List<TopUp>> historyTopUp(@RequestParam String username){
+        List<TopUp> response = customerService.historyTopUp(username);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("frontend")
     public ResponseEntity<Customer> detailCustomerFrontend(@RequestParam String username, @RequestParam String token){
         Customer response = customerService.getCustomerFrontend(username, token);
