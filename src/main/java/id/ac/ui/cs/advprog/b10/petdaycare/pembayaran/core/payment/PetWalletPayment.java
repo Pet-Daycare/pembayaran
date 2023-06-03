@@ -21,6 +21,9 @@ public class PetWalletPayment implements Payment {
     @Override
     public Bill pay(Bill bill) {
         Customer customer = customerService.findCustomer(bill.getUsername());
+        if (customer == null)
+            return bill;
+
         var balance = customer.getBalance();
 
         double reducedBalance =  balance - bill.getTotal();
