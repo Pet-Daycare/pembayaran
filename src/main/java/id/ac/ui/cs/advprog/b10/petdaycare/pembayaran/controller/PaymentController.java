@@ -2,7 +2,6 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
