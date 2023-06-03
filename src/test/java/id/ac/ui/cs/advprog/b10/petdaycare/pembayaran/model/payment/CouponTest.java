@@ -10,7 +10,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CouponTest {
+ class CouponTest {
 
     @Mock
     private CustomerService customerService;
@@ -42,7 +42,7 @@ public class CouponTest {
     }
 
     @Test
-    public void testRedeem_NotRedeemedWithEnoughBalance_BillPaidWithDiscount() throws InterruptedException {
+     void testRedeem_NotRedeemedWithEnoughBalance_BillPaidWithDiscount() throws InterruptedException {
         Bill redeemedBill = coupon.redeem(bill, customerService);
 
         assertTrue(redeemedBill.isPaid());
@@ -54,7 +54,7 @@ public class CouponTest {
     }
 
     @Test
-    public void testRedeem_AlreadyRedeemed_BillNotChanged() throws InterruptedException {
+     void testRedeem_AlreadyRedeemed_BillNotChanged() throws InterruptedException {
         coupon.setRedeemed(true);
 
         Bill unchangedBill = coupon.redeem(bill, customerService);
@@ -68,7 +68,7 @@ public class CouponTest {
     }
 
     @Test
-    public void testRedeem_NotRedeemedWithInsufficientBalance_BillNotChanged() throws InterruptedException {
+     void testRedeem_NotRedeemedWithInsufficientBalance_BillNotChanged() throws InterruptedException {
         customer.setBalance(50.0);
 
         Bill unchangedBill = coupon.redeem(bill, customerService);
@@ -82,16 +82,172 @@ public class CouponTest {
     }
 
     @Test
-    public void testIsEnoughBalance_EnoughBalance_ReturnsTrue() {
+     void testIsEnoughBalance_EnoughBalance_ReturnsTrue() {
         boolean enoughBalance = coupon.isEnoughBalance(200.0, 100.0);
 
         assertTrue(enoughBalance);
     }
 
     @Test
-    public void testIsEnoughBalance_InsufficientBalance_ReturnsFalse() {
+     void testIsEnoughBalance_InsufficientBalance_ReturnsFalse() {
         boolean enoughBalance = coupon.isEnoughBalance(50.0, 100.0);
 
         assertFalse(enoughBalance);
+    }
+
+    @Test
+    void testToString() {
+        Integer id = 1;
+        String code = "ABCD1234";
+        double discount = 15.0;
+        boolean isRedeemed = false;
+
+        Coupon coupon = Coupon.builder()
+                .id(id)
+                .code(code)
+                .discount(discount)
+                .isRedeemed(isRedeemed)
+                .build();
+
+        String expectedString = "Coupon(id=1, code=ABCD1234, discount=15.0, isRedeemed=false)";
+        String actualString = coupon.toString();
+
+        assertEquals(expectedString, actualString);
+    }
+
+    @Test
+    void testSetId() {
+        Integer originalId = 1;
+        Integer newId = 2;
+
+        Coupon coupon = Coupon.builder()
+                .id(originalId)
+                .code("ABCD1234")
+                .discount(15.0)
+                .isRedeemed(false)
+                .build();
+
+        coupon.setId(newId);
+
+        Integer updatedId = coupon.getId();
+        assertEquals(newId, updatedId);
+    }
+
+    @Test
+    void testGetId() {
+        Integer expectedId = 1;
+
+        Coupon coupon = Coupon.builder()
+                .id(expectedId)
+                .code("ABCD1234")
+                .discount(15.0)
+                .isRedeemed(false)
+                .build();
+
+        Integer actualId = coupon.getId();
+        assertEquals(expectedId, actualId);
+    }
+
+     @Test
+     void testCanEqual() {
+         Coupon coupon1 = new Coupon();
+         Coupon coupon2 = new Coupon();
+
+         // Test for equality with itself
+         assertTrue(coupon1.canEqual(coupon1));
+
+         // Test for equality with a non-null object of the same type
+         assertTrue(coupon1.canEqual(coupon2));
+
+         // Test for equality with a null object
+         assertFalse(coupon1.canEqual(null));
+     }
+
+     @Test
+     void testHashCode() {
+         Coupon coupon1 = Coupon.builder()
+                 .id(1)
+                 .code("ABCD1234")
+                 .discount(15.0)
+                 .isRedeemed(false)
+                 .build();
+
+         Coupon coupon2 = Coupon.builder()
+                 .id(1)
+                 .code("ABCD1234")
+                 .discount(15.0)
+                 .isRedeemed(false)
+                 .build();
+
+         Coupon coupon3 = Coupon.builder()
+                 .id(2)
+                 .code("EFGH5678")
+                 .discount(20.0)
+                 .isRedeemed(true)
+                 .build();
+
+         // Test for equality with itself
+         assertEquals(coupon1.hashCode(), coupon1.hashCode());
+
+         // Test for equality with a non-null object of the same type
+         assertEquals(coupon1.hashCode(), coupon2.hashCode());
+
+         // Test for inequality with a different object of the same type
+         assertNotEquals(coupon1.hashCode(), coupon3.hashCode());
+
+         // Test for inequality with a null object
+         assertNotEquals(coupon1.hashCode(), 0);
+     }
+
+     @Test
+     void testEquals() {
+         Coupon coupon1 = Coupon.builder()
+                 .id(1)
+                 .code("ABCD1234")
+                 .discount(15.0)
+                 .isRedeemed(false)
+                 .build();
+
+         Coupon coupon2 = Coupon.builder()
+                 .id(1)
+                 .code("ABCD1234")
+                 .discount(15.0)
+                 .isRedeemed(false)
+                 .build();
+
+         Coupon coupon3 = Coupon.builder()
+                 .id(2)
+                 .code("EFGH5678")
+                 .discount(20.0)
+                 .isRedeemed(true)
+                 .build();
+
+         // Test for equality with itself
+         assertEquals(coupon1, coupon1);
+
+         // Test for equality with a non-null object of the same type
+         assertEquals(coupon1, coupon2);
+
+         // Test for inequality with a different object of the same type
+         assertNotEquals(coupon1, coupon3);
+
+         // Test for inequality with null
+         assertNotEquals(coupon1, null);
+
+         // Test for inequality with a different type of object
+         assertNotEquals(coupon1, "ABCD1234");
+     }
+
+    @Test
+    void testBuilderToString() {
+        Coupon.CouponBuilder builder = Coupon.builder()
+                .id(1)
+                .code("ABCD1234")
+                .discount(15.0)
+                .isRedeemed(false);
+
+        String expectedString = "Coupon.CouponBuilder(id=1, code=ABCD1234, discount=15.0, isRedeemed=false)";
+
+        assertEquals(expectedString, builder.toString());
     }
 }

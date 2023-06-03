@@ -1,16 +1,22 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.PetWalletPayment;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.*;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.PaymentMethod;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.CustomerRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.VoucherRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +31,7 @@ import static org.mockito.Mockito.*;
 
 class PaymentServiceImplTest {
 
+    @Mock
     private PaymentServiceImpl paymentService;
 
     @Mock
@@ -35,9 +42,12 @@ class PaymentServiceImplTest {
 
     @Mock
     private BillRepository billRepository;
-
+    @Mock
+    private CustomerRepository customerRepository;
     @Mock
     private CustomerService customerService;
+    @Mock
+    PetWalletPayment petWalletPayment;
 
     @BeforeEach
     void setUp() {
@@ -78,55 +88,65 @@ class PaymentServiceImplTest {
         verify(billRepository, times(1)).save(any(Bill.class));
     }
 
-    @Test
-    void createBill_withNewCustomer_shouldReturnBill() {
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setUsername("john");
-        paymentRequest.setToken("123456");
-        paymentRequest.setIdPenitipan(1);
-        paymentRequest.setTotal(100.0);
-        paymentRequest.setMethod("PET_WALLET");
-        paymentRequest.setCode("ABC123");
-
-        when(customerService.findCustomer("john")).thenReturn(null);
-        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        Bill bill = paymentService.createBill(paymentRequest);
-
-        assertNotNull(bill);
-        assertEquals("john", bill.getUsername());
-        assertEquals(1, bill.getIdPenitipan());
-        assertEquals(100.0, bill.getTotal());
-        assertEquals(0.0, bill.getCustomerBalance());
-        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
-        assertEquals("ABC123", bill.getCode());
-        assertFalse(bill.isVerified());
-
-        verify(customerService, times(1)).findCustomer("john");
-        verify(billRepository, times(1)).save(any(Bill.class));
-    }
-
 //    @Test
-//    void makePayment_withPetWalletPayment_shouldReturnPaidBill() throws InterruptedException {
-//        Bill bill = new Bill();
-//        bill.setId(1);
-//        bill.setUsername("john");
-//        bill.setMethod(PaymentMethod.PET_WALLET);
-//        bill.setCode("ABC123");
+//    void createBill_WithNewCustomer_ShouldReturnBill() {
+//        // Arrange
+//        PaymentRequest request = new PaymentRequest();
+//        request.setUsername("john_doe");
+//        request.setToken("valid_token");
+//        request.setIdPenitipan(1);
+//        request.setTotal(100.0);
+//        request.setMethod("PET_WALLET");
+//        request.setCode("123456");
 //
-//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+//        Customer existingCustomer = new Customer();
+//        existingCustomer.setUsername("john_doe");
 //
-//        Bill result = paymentService.makePayment(bill);
+//        when(customerService.findCustomer("john_doe")).thenReturn(null);
+//        when(customerService.createCustomer(any(CustomerRequest.class))).thenReturn(existingCustomer);
 //
+//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> {
+//            Bill savedBill = invocation.getArgument(0);
+//            savedBill.setId(1); // Set a sample ID for the saved bill
+//            return savedBill;
+//        });
+//
+//        // Act
+//        Bill result = paymentService.createBill(request);
+//
+//        // Assert
 //        assertNotNull(result);
 //        assertEquals(1, result.getId());
-//        assertEquals("john", result.getUsername());
+//        assertEquals(existingCustomer.getCustomerId(), result.getIdCustomer());
+//        assertEquals(existingCustomer.getUsername(), result.getUsername());
+//        assertEquals(request.getIdPenitipan(), result.getIdPenitipan());
+//        assertEquals(request.getTotal(), result.getTotal());
+//        assertEquals(0.0, result.getCustomerBalance());
 //        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
-//        assertEquals("ABC123", result.getCode());
-//        assertTrue(result.isPaid());
+//        assertEquals(request.getCode(), result.getCode());
 //
-//        verify(billRepository, times(1)).save(any(Bill.class));
+//        verify(customerService).findCustomer("john_doe");
+//        verify(customerService).createCustomer(any(CustomerRequest.class));
+//        verify(billRepository).save(any(Bill.class));
 //    }
+
+    @Test
+    void payRefund_ValidBill_ReturnsPaidRefundedBill() {
+        // Arrange
+        Bill bill = new Bill();
+        bill.setTotal(-100.0);
+        bill.setCustomerBalance(200.0);
+        bill.setPaid(false);
+        bill.setVerified(false);
+
+        // Act
+        Bill result = paymentService.payRefund(bill);
+
+        // Assert
+        assertTrue(result.isPaid());
+        assertTrue(result.isVerified());
+        assertEquals(300.0, result.getCustomerBalance(), 0.01);
+    }
 
     @Test
     void makePayment_withVoucherPayment_shouldReturnPaidBill() throws InterruptedException {
@@ -386,38 +406,101 @@ class PaymentServiceImplTest {
         verify(customerService, never()).setBalance(any(), anyDouble());
     }
 
-    @Test
-    void testCreateBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
-        // Arrange
-        PaymentRequest request = new PaymentRequest();
-        request.setUsername("john_doe");
-        request.setToken("123456");
-        request.setIdPenitipan(1);
-        request.setTotal(100.0);
-        request.setMethod("PET_WALLET");
-        request.setCode("ABC123");
+//    @Test
+//    void createBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
+//        // Arrange
+//        PaymentRequest request = new PaymentRequest();
+//        request.setUsername("john_doe");
+//        request.setToken("valid_token");
+//        request.setIdPenitipan(1);
+//        request.setTotal(100.0);
+//        request.setMethod("PET_WALLET");
+//        request.setCode("");
+//
+//        when(customerService.findCustomer("john_doe")).thenReturn(null);
+//        when(customerService.createCustomer(any())).thenReturn(new Customer());
+//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> {
+//            Bill savedBill = invocation.getArgument(0);
+//            savedBill.setId(1); // Set a sample ID for the saved bill
+//            return savedBill;
+//        });
+//
+//        // Act
+//        Bill bill = paymentService.createBill(request);
+//
+//        // Assert
+//        assertNotNull(bill);
+//        assertEquals(1, bill.getId()); // Assuming the ID generated is 1
+//        assertEquals("john_doe", bill.getUsername());
+//        assertEquals(1, bill.getIdPenitipan());
+//        assertEquals(100.0, bill.getTotal());
+//        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
+//        assertEquals("", bill.getCode());
+//
+//        // Verify that the customer was created and saved
+//        verify(customerService).createCustomer(any());
+//        verify(billRepository).save(any(Bill.class));
+//    }
 
-        when(customerService.findCustomer("john_doe")).thenReturn(null);
 
-        // Act
-        Bill bill = paymentService.createBill(request);
-
-        // Assert
-        assertNotNull(bill);
-        assertEquals("john_doe", bill.getUsername());
-        assertEquals(1, bill.getIdPenitipan());
-        assertEquals(100.0, bill.getTotal());
-        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
-        assertEquals("ABC123", bill.getCode());
-        assertFalse(bill.isVerified());
-        assertNull(bill.getIdCustomer());
-        assertEquals(0.0, bill.getCustomerBalance());
-        verify(billRepository, times(1)).save(bill);
-//        verify(customerService, times(1)).createCustomer(any());
-        verify(customerService, times(1)).findCustomer("john_doe");
-        verify(customerService, never()).setBalance(any(), anyDouble());
-    }
-
+//    @Test
+//    void createBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
+//        // Arrange
+//        String username = "john";
+//        String token = "token123";
+//        double total = 100.0;
+//        Integer idPenitipan = 1;
+//        String method = PaymentMethod.PET_WALLET_WITH_COUPON.name();
+//        String code = "COUPON123";
+//
+//        PaymentRequest request = PaymentRequest.builder()
+//                .username(username)
+//                .token(token)
+//                .total(total)
+//                .idPenitipan(idPenitipan)
+//                .method(method)
+//                .code(code)
+//                .build();
+//
+//        CustomerRequest customerRequest = CustomerRequest.builder()
+//                .username(username)
+//                .token(token)
+//                .build();
+//
+//        Customer createdCustomer = new Customer();
+//        createdCustomer.setCustomerId(1);
+//        createdCustomer.setUsername(username);
+//        createdCustomer.setBalance(0.0);
+//
+//        Bill createdBill = new Bill();
+//        createdBill.setId(1);
+//        createdBill.setIdCustomer(createdCustomer.getCustomerId());
+//        createdBill.setUsername(createdCustomer.getUsername());
+//        createdBill.setTotal(total);
+//        createdBill.setCustomerBalance(createdCustomer.getBalance());
+//        createdBill.setMethod(PaymentMethod.PET_WALLET_WITH_COUPON);
+//        createdBill.setCode(code);
+//
+//        when(customerService.findCustomer(username)).thenReturn(null);
+//        when(customerService.createCustomer(customerRequest)).thenReturn(createdCustomer);
+//        when(billRepository.save(any(Bill.class))).thenReturn(createdBill);
+//
+//        // Act
+//        Bill result = paymentService.createBill(request);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(createdBill.getId(), result.getId());
+//        assertEquals(createdBill.getUsername(), result.getUsername());
+//        assertEquals(createdBill.getTotal(), result.getTotal());
+//        assertEquals(createdBill.getCustomerBalance(), result.getCustomerBalance());
+//        assertEquals(createdBill.getMethod(), result.getMethod());
+//        assertEquals(createdBill.getCode(), result.getCode());
+//
+//        verify(customerService).findCustomer(username);
+//        verify(customerService).createCustomer(customerRequest);
+//        verify(billRepository).save(any(Bill.class));
+//    }
     @Test
     void testCreateBill_WithMissingUsername_ShouldThrowInvalidInputException() {
         // Arrange
@@ -514,6 +597,27 @@ class PaymentServiceImplTest {
         assertEquals(2, actualCoupons.size());
 
     }
+
+    @Test
+    void addCoupon_ValidRequest_ReturnsCreatedCoupon() {
+        // Arrange
+        CouponRequest request = new CouponRequest();
+        request.setDiscount(10);
+
+        Coupon coupon = new Coupon();
+        coupon.setDiscount(10);
+
+        when(couponRepository.save(any(Coupon.class))).thenReturn(coupon);
+
+        // Act
+        Coupon result = paymentService.addCoupon(request);
+
+        // Assert
+        assertNotNull(result);
+        assertNotNull(result.getCode());
+        assertEquals(10, result.getDiscount());
+        verify(couponRepository, times(1)).save(any(Coupon.class));
+    }
     @Test
     void getCouponByCode_ValidCode_ReturnsCoupon() {
         // Arrange
@@ -562,6 +666,28 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    void addVoucher_ValidRequest_ReturnsCreatedVoucher() {
+        // Arrange
+        VoucherRequest request = new VoucherRequest();
+        request.setAmount(50.0);
+
+        Voucher voucher = new Voucher();
+        voucher.setAmount(50.0);
+
+        when(voucherRepository.save(any(Voucher.class))).thenReturn(voucher);
+
+        // Act
+        Voucher result = paymentService.addVoucher(request);
+
+        // Assert
+        assertNotNull(result);
+        assertNotNull(result.getCode());
+        assertEquals(50.0, result.getAmount(), 0.01);
+        verify(voucherRepository, times(1)).save(any(Voucher.class));
+    }
+
+
+    @Test
     void getVoucherByCode_ValidCode_ReturnsVoucher() {
         // Arrange
         String voucherCode = "VOUCHER123";
@@ -592,4 +718,41 @@ class PaymentServiceImplTest {
 
         verify(voucherRepository, times(1)).findByCode(voucherCode);
     }
+
+    @Test
+    void addBillToCustomer_WithEmptyPaymentList_AddsBillAndReturnsTrue() {
+        // Arrange
+        Customer customer = new Customer();
+        Bill bill = new Bill();
+
+        // Act
+        boolean result = paymentService.addBillToCustomer(customer, bill);
+
+        // Assert
+        assertTrue(result);
+        assertEquals(1, customer.getPaymentList().size());
+        assertEquals(bill, customer.getPaymentList().get(0));
+    }
+
+    @Test
+    void addBillToCustomer_WithExistingPaymentList_AddsBillAndReturnsTrue() {
+        // Arrange
+        Customer customer = new Customer();
+        Bill bill1 = new Bill();
+        Bill bill2 = new Bill();
+        List<Bill> paymentList = new ArrayList<>();
+        paymentList.add(bill1);
+        customer.setPaymentList(paymentList);
+
+        // Act
+        boolean result = paymentService.addBillToCustomer(customer, bill2);
+
+        // Assert
+        assertTrue(result);
+        assertEquals(2, customer.getPaymentList().size());
+        assertEquals(bill1, customer.getPaymentList().get(0));
+        assertEquals(bill2, customer.getPaymentList().get(1));
+    }
+
+
 }

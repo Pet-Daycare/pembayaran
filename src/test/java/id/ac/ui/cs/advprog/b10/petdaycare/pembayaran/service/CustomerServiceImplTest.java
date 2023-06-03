@@ -3,7 +3,6 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.AuthTransactionDto;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.CustomerAlreadyExistException;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.CustomerDoesNotExistException;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.CustomerRepository;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -256,6 +254,17 @@ public class CustomerServiceImplTest {
         verify(customerRepository, times(1)).findCustomersByusername(username);
     }
 
-    // Additional test cases for the other methods in CustomerServiceImpl can be added here...
+    @Test
+    void setBalance_ShouldSetCustomerBalance() {
+        // Arrange
+        Customer customer = new Customer();
+        double balance = 100.0;
+
+        // Act
+        customerService.setBalance(customer, balance);
+
+        // Assert
+        assertEquals(balance, customer.getBalance());
+    }
 
 }

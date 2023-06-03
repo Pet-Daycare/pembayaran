@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 @Service
 @Transactional
@@ -231,7 +229,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     public boolean addBillToCustomer(Customer customer, Bill bill){
         List<Bill> customerListPayment = null;
-        if(customer.getTopUpList() != null){
+        if(customer.getPaymentList() != null){
             customerListPayment = customer.getPaymentList();
         } else{
             customer.setPaymentList(Collections.singletonList(bill));
