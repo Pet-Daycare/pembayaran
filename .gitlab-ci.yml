@@ -25,6 +25,7 @@ sonarcloud-check:
     - merge_requests
     - master
     - develop
+    - post-sprint-revision
 
 stages:
   - build
@@ -47,6 +48,7 @@ Build:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
+
 Test:
   stage: test
   image: gradle:jdk17-alpine
@@ -88,6 +90,7 @@ Publish:
     - dind
   only:
     - master
+    - post-sprint-revision
 
 Deploy:
   stage: deploy
@@ -99,3 +102,4 @@ Deploy:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY $GCP_USERNAME@$GCP_STATIC_IP " docker container rm -f $CONTAINER_NAME || true && docker image rm -f $REGISTRY_USER/$IMAGE_NAME:$IMAGE_TAG || true && docker run --name $CONTAINER_NAME -d -p 80:8080 $REGISTRY_USER/$IMAGE_NAME:$IMAGE_TAG"
   only:
     - master
+    - post-sprint-revision
