@@ -1,18 +1,12 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-
-
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {

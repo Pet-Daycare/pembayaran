@@ -67,12 +67,12 @@ public class TopUpControllerTest {
         String id = "123456";
         AprovalTopUpResponse expectedResponse = AprovalTopUpResponse.builder()
                 .message(String.format("Success approval TopUp with ID: %s to username: %s", id, topup.getUsername()))
-                .detail_topup(topup)
+                .detailTopup(topup)
                 .build();
         when(topUpService.approvalTopUp(id)).thenReturn(
                 AprovalTopUpResponse.builder()
                         .message(String.format("Success approval TopUp with ID: %s to username: %s", id, topup.getUsername()))
-                        .detail_topup(topup)
+                        .detailTopup(topup)
                         .build());
 
         ResponseEntity<AprovalTopUpResponse> response = topupController.approvalTopup(id);

@@ -1,8 +1,7 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller.CouponController;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.VoucherRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;

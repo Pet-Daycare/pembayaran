@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +44,7 @@ public class TopUpServiceImpl implements TopUpService{
         }
 
         this.serviceCalculate = new TopUpCalculateServiceImpl();
-        TopUpTypeBrand topUpTypeBrand =  TopUpTypeBrand.valueOf(TopUpTypeBrand.class, request.getTypeMethod());
+        TopUpTypeBrand topUpTypeBrand =  java.lang.Enum.valueOf(TopUpTypeBrand.class, request.getTypeMethod());
         TopUpCalulate typeFee = serviceCalculate.createCalculateTopUp(topUpTypeBrand);
 
         TopUp topUp = new TopUp();
@@ -52,8 +53,7 @@ public class TopUpServiceImpl implements TopUpService{
         topUp.setTypeMethod(topUpTypeBrand.toString());
         topUp.setTimeTaken(new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date()).toLowerCase());
         topUp.setNominal(request.getNominal());
-        System.out.println(typeFee.getSummaryTopUp());
-        topUp.setAcumulateNominal((typeFee.getSummaryTopUp() + 1 ) * topUp.getNominal());
+        topUp.setAccumulateNominal((typeFee.getSummaryTopUp() + 1 ) * topUp.getNominal());
         topUp.setValidate(false);
 
         topUpRepository.save(topUp);
@@ -75,16 +75,16 @@ public class TopUpServiceImpl implements TopUpService{
         if(topUpAprove.isValidate()){
             return AprovalTopUpResponse.builder()
                     .message("Already validated!")
-                    .detail_topup(topUpAprove)
+                    .detailTopup(topUpAprove)
                     .build();
         }
 
         topUpAprove.setValidate(true);
-        customerService.addBalance(topUpAprove.getUsername(), topUpAprove.getAcumulateNominal());
+        customerService.addBalance(topUpAprove.getUsername(), topUpAprove.getAccumulateNominal());
 
         return AprovalTopUpResponse.builder()
                 .message(String.format("Success approval TopUp with ID: %s to username: %s", id, topUpAprove.getUsername()))
-                .detail_topup(topUpAprove)
+                .detailTopup(topUpAprove)
                 .build();
     }
 
@@ -110,16 +110,16 @@ public class TopUpServiceImpl implements TopUpService{
         return topUpRepository.findToUpById(id).get();
     }
 
-    public boolean addTopUpToCustomer(Customer customer, TopUp topUp){
-        List<TopUp> customerListTopUp = null;
-        if(customer.getTopUpList() != null){
-            customerListTopUp = customer.getTopUpList();
-        } else{
-            customer.setTopUpList(Collections.singletonList(topUp));
-            return true;
+    public boolean addTopUpToCustomer(Customer customer, TopUp topUp) {
+        List<TopUp> customerListTopUp = customer.getTopUpList();
+        if (customerListTopUp == null) {
+            customerListTopUp = new ArrayList<>();
         }
+
         customerListTopUp.add(topUp);
         customer.setTopUpList(customerListTopUp);
-        return true;
+
+        return customer.getTopUpList().contains(topUp);
     }
+
 }

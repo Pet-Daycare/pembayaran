@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -168,10 +170,10 @@ class TopUpServiceImplTest {
 
         AprovalTopUpResponse response = AprovalTopUpResponse.builder()
                 .message(String.format("Success approval TopUp with ID: %s to username: %s", topUp.getId(), topUp.getUsername()))
-                .detail_topup(topUp)
+                .detailTopup(topUp)
                 .build();
 
-        when(topUpRepository.findToUpById("3")).thenReturn(java.util.Optional.of(topUp));
+        when(topUpRepository.findToUpById("3")).thenReturn(Optional.of(topUp));
 
         AprovalTopUpResponse result = topUpService.approvalTopUp("3");
 
@@ -185,10 +187,10 @@ class TopUpServiceImplTest {
         topUp.setValidate(true);
         AprovalTopUpResponse response = AprovalTopUpResponse.builder()
                 .message("Already validated!")
-                .detail_topup(topUp)
+                .detailTopup(topUp)
                 .build();;
 
-        when(topUpRepository.findToUpById("1")).thenReturn(java.util.Optional.of(topUp));
+        when(topUpRepository.findToUpById("1")).thenReturn(Optional.of(topUp));
 
         AprovalTopUpResponse result = topUpService.approvalTopUp("1");
 

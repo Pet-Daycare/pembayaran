@@ -9,8 +9,7 @@ class CodeGeneratorTest {
     @Test
     void generate_ShouldReturnRandomCodeWithLength10() {
         // Act
-        CodeGenerator generator = new CodeGenerator();
-        String code = generator.generate();
+        String code = CodeGenerator.generate();
 
         // Assert
         assertNotNull(code);
@@ -20,8 +19,7 @@ class CodeGeneratorTest {
     @Test
     void generate_ShouldNotReturnNull() {
         // Act
-        CodeGenerator generator = new CodeGenerator();
-        String code = generator.generate();
+        String code = CodeGenerator.generate();
 
         // Assert
         assertNotNull(code);

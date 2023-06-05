@@ -5,7 +5,6 @@ import java.util.Random;
 public class QRPromo implements Cashback{
     @Override
     public double getCashback(){
-        Random r = new Random();
         return 0.0 / 100.0;
     }
 }

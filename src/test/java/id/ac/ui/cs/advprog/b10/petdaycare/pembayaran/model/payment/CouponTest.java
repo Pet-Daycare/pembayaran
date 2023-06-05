@@ -196,7 +196,7 @@ import static org.mockito.Mockito.*;
          assertNotEquals(coupon1.hashCode(), coupon3.hashCode());
 
          // Test for inequality with a null object
-         assertNotEquals(coupon1.hashCode(), 0);
+         assertNotEquals(0, coupon1.hashCode());
      }
 
      @Test
@@ -232,10 +232,10 @@ import static org.mockito.Mockito.*;
          assertNotEquals(coupon1, coupon3);
 
          // Test for inequality with null
-         assertNotEquals(coupon1, null);
+         assertNotEquals(null, coupon1);
 
          // Test for inequality with a different type of object
-         assertNotEquals(coupon1, "ABCD1234");
+         assertNotEquals("ABCD1234", coupon1);
      }
 
     @Test

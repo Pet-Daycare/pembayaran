@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.components.adminFee;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.components.adminfee;
 
 public class TansferBankFee implements AdminFee{
 

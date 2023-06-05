@@ -3,9 +3,9 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.CodeGenerator;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.CouponAdapter;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.adapter.VoucherAdapter;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.CouponRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.VoucherRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.PetWalletPayment;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.*;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,13 +55,6 @@ public class PaymentServiceImpl implements PaymentService {
         Customer findCustomer = customerService.findCustomer(request.getUsername());
         if(findCustomer == null){
             findCustomer = customerService.createCustomer(new CustomerRequest(request.getUsername(), request.getToken()));
-
-
-//            Customer customer = new Customer();
-//            customer.setUsername(request.getUsername());
-//            customer.setBalance(0.0);
-//            customer.setTopUpList(new ArrayList<>());
-//            customer.setPaymentList(new ArrayList<>());
 
             var bill = Bill.builder()
                     .idCustomer(findCustomer.getCustomerId())
@@ -151,8 +145,6 @@ public class PaymentServiceImpl implements PaymentService {
     public List<Bill> approveAllPayments() {
         List<Bill> bills = billRepository.findAllByVerified(false);
         for (Bill bill: bills) {
-//            Customer customer = customerService.findCustomer(bill.getUsername());
-//            customer.setBalance(customer.getBalance() - bill.getTotal());
             bill.setVerified(true);
         }
         return bills;
@@ -227,17 +219,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
 
-    public boolean addBillToCustomer(Customer customer, Bill bill){
-        List<Bill> customerListPayment = null;
-        if(customer.getPaymentList() != null){
-            customerListPayment = customer.getPaymentList();
-        } else{
-            customer.setPaymentList(Collections.singletonList(bill));
-            return true;
+    public boolean addBillToCustomer(Customer customer, Bill bill) {
+        List<Bill> customerListPayment = customer.getPaymentList();
+        if (customerListPayment == null) {
+            customerListPayment = new ArrayList<>();
         }
+
         customerListPayment.add(bill);
         customer.setPaymentList(customerListPayment);
-        return true;
+
+        return customer.getPaymentList().contains(bill);
     }
 }
 

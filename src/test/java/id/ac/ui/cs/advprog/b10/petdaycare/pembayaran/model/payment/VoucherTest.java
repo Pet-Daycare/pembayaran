@@ -126,9 +126,9 @@ import static org.mockito.Mockito.*;
 
         Object object = new Object();
 
-        assertTrue(voucher1.equals(voucher2));
-        assertFalse(voucher1.equals(voucher3));
-        assertFalse(voucher1.equals(object));
+       assertEquals(voucher1, voucher2);
+       assertNotEquals(voucher1, voucher3);
+       assertNotEquals(voucher1, object);
     }
 
     @Test

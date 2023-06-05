@@ -37,6 +37,7 @@ public class Customer {
     private List<Bill> paymentList;
 
     public void setToken(String abc123) {
+
     }
 }
 

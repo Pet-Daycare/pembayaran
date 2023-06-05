@@ -3,6 +3,11 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core;
 import java.util.Random;
 
 public class CodeGenerator {
+
+    private CodeGenerator() {
+        // This class is not meant to be instantiated!
+    }
+
     public static String generate() {
         // Taken from : https://www.baeldung.com/java-random-string
         int leftLimit = 48; // numeral '0'

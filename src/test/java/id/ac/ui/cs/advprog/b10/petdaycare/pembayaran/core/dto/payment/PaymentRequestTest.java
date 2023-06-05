@@ -79,10 +79,10 @@ class PaymentRequestTest {
             // Do nothing
         } else {
             // Test for equality with null
-            assertFalse(paymentRequest1.equals(paymentRequest2));
+            assertNotEquals(paymentRequest1, paymentRequest2);
 
             // Test for equality with a non-null object
-            assertFalse(paymentRequest2.equals(paymentRequest1));
+            assertNotEquals(paymentRequest2, paymentRequest1);
         }
     }
 
@@ -93,10 +93,10 @@ class PaymentRequestTest {
         String str = "abc";
 
         // Test for equality with a different type
-        assertFalse(paymentRequest1.equals(str));
+        assertNotEquals(paymentRequest1, str);
 
         // Test for equality with a non-null object
-        assertFalse(str.equals(paymentRequest1));
+        assertNotEquals(str, paymentRequest1);
     }
 
     @Test
@@ -108,7 +108,7 @@ class PaymentRequestTest {
         paymentRequest2.setIdPenitipan(456);
 
         // Test for equality with a different object having different values
-        assertFalse(paymentRequest1.equals(paymentRequest2));
+        assertNotEquals(paymentRequest1, paymentRequest2);
     }
 
 

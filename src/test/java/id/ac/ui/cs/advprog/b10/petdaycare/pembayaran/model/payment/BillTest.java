@@ -553,7 +553,7 @@ class BillTest {
                 .verified(false)
                 .build();
 
-        assertNotEquals(bill1, null);
+        assertNotEquals(null, bill1);
     }
 
 

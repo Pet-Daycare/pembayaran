@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher;
 
 import org.junit.jupiter.api.Test;
 
@@ -79,16 +79,16 @@ class CouponRequestTest {
                  .build();
 
          // Test for equality with itself
-         assertTrue(couponRequest1.equals(couponRequest1));
+         assertEquals(couponRequest1, couponRequest1);
 
          // Test for equality with a different object type
-         assertFalse(couponRequest1.equals("0.15"));
+         assertNotEquals("0.15", couponRequest1);
 
          // Test for equality with a different object having the same values
-         assertTrue(couponRequest1.equals(couponRequest2));
+         assertEquals(couponRequest1, couponRequest2);
 
          // Test for equality with a different object having different values
-         assertFalse(couponRequest1.equals(couponRequest3));
+         assertNotEquals(couponRequest1, couponRequest3);
      }
 
     @Test

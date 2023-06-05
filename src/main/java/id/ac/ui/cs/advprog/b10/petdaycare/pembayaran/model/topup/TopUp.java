@@ -27,7 +27,7 @@ public class TopUp {
 
     private String timeTaken;
     private  Double nominal;
-    private double AcumulateNominal;
+    private double accumulateNominal;
     private boolean validate;
 }
 

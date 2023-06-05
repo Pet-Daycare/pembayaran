@@ -1,9 +1,8 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.VoucherRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.payment.PaymentRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.payment.PetWalletPayment;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.*;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
@@ -16,7 +15,6 @@ import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.BillRepo
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.CouponRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.payment.VoucherRepository;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -46,33 +46,33 @@ class VoucherRequestTest {
     @Test
     void testEqualsSameObject() {
         VoucherRequest sut = new VoucherRequest();
-        Assertions.assertTrue(sut.equals(sut));
+        assertEquals(sut, sut);
     }
 
     @Test
     void testEqualsNull() {
         VoucherRequest sut = new VoucherRequest();
-        Assertions.assertFalse(sut.equals(null));
+        assertNotEquals(null, sut);
     }
 
     @Test
     void testEqualsDifferentClass() {
         VoucherRequest sut = new VoucherRequest();
-        Assertions.assertFalse(sut.equals(new Object()));
+        assertNotEquals(sut, new Object());
     }
 
     @Test
     void testEqualsDifferentAmount() {
         VoucherRequest sut1 = new VoucherRequest(10000.0);
         VoucherRequest sut2 = new VoucherRequest(20000.0);
-        Assertions.assertFalse(sut1.equals(sut2));
+        assertNotEquals(sut1, sut2);
     }
 
     @Test
     void testEqualsSameAmount() {
         VoucherRequest sut1 = new VoucherRequest(10000.0);
         VoucherRequest sut2 = new VoucherRequest(10000.0);
-        Assertions.assertTrue(sut1.equals(sut2));
+        assertEquals(sut1, sut2);
     }
     @Test
     void testHashCode() {

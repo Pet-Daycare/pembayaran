@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment;
 
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Bill;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer.CustomerService;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

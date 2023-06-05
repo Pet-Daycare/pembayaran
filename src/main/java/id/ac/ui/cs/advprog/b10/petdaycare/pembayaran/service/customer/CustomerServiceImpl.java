@@ -34,10 +34,8 @@ public class CustomerServiceImpl implements CustomerService{
         AuthTransactionDto dto = futureDto.join();
 
         if (dto == null) {
-//            create and return new customer
             Customer customerAccount =  new Customer();
             customerAccount.setUsername(request.getUsername());
-//            customerAccount.setCustomerId(dto.getIdCustomer());
             customerAccount.setBalance(0.0);
             customerAccount.setPaymentList(new ArrayList<>());
             customerAccount.setTopUpList(new ArrayList<>());
@@ -46,10 +44,6 @@ public class CustomerServiceImpl implements CustomerService{
 
             return customerAccount;
         }
-
-        System.out.println(dto.getIdCustomer());
-
-        System.out.println(dto.getUsername());
 
         if(!isCustomerDoesNotExist(request.getUsername())) {
             throw new CustomerAlreadyExistException(request.getUsername());
@@ -63,19 +57,6 @@ public class CustomerServiceImpl implements CustomerService{
         customerAccount.setTopUpList(new ArrayList<>());
         customerRepository.save(customerAccount);
         return customerAccount;
-
-
-//
-//        Customer customerAccount =  new Customer();
-//        customerAccount.setUsername(request.getUsername());
-//        customerAccount.setCustomerId(dto.getIdCustomer());
-//        customerAccount.setBalance(0.0);
-//        customerAccount.setPaymentList(new ArrayList<>());
-//        customerAccount.setTopUpList(new ArrayList<>());
-//
-//        customerRepository.save(customerAccount);
-//
-//        return customerAccount;
     }
     @Override
     public Double addBalance(String username, double amount){
@@ -129,8 +110,7 @@ public class CustomerServiceImpl implements CustomerService{
     private AuthTransactionDto verifyToken(String token) throws InterruptedException{
         String otherInstanceURL = "http://localhost:8080/api/v1/auth/verify-token/"+token;
 
-        AuthTransactionDto res = restTemplate.getForObject((otherInstanceURL), AuthTransactionDto.class);
-        return res;
+        return restTemplate.getForObject((otherInstanceURL), AuthTransactionDto.class);
     }
 
     private Supplier<AuthTransactionDto> getAuthTransactionDtoSupplier(String token) {
