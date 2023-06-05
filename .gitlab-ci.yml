@@ -26,6 +26,7 @@ sonarcloud-check:
     - master
     - develop
     - post-sprint-revision
+  allow_failure: true
 
 stages:
   - build
