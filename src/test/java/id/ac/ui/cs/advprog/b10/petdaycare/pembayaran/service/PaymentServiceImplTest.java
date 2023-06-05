@@ -89,6 +89,34 @@ class PaymentServiceImplTest {
     }
 
 //    @Test
+//    void createBill_withNewCustomer_shouldReturnBill() {
+//        PaymentRequest paymentRequest = new PaymentRequest();
+//        paymentRequest.setUsername("john");
+//        paymentRequest.setToken("123456");
+//        paymentRequest.setIdPenitipan(1);
+//        paymentRequest.setTotal(100.0);
+//        paymentRequest.setMethod("PET_WALLET");
+//        paymentRequest.setCode("ABC123");
+//
+//        when(customerService.findCustomer("john")).thenReturn(null);
+//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
+//
+//        Bill bill = paymentService.createBill(paymentRequest);
+//
+//        assertNotNull(bill);
+//        assertEquals("john", bill.getUsername());
+//        assertEquals(1, bill.getIdPenitipan());
+//        assertEquals(100.0, bill.getTotal());
+//        assertEquals(0.0, bill.getCustomerBalance());
+//        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
+//        assertEquals("ABC123", bill.getCode());
+//        assertFalse(bill.isVerified());
+//
+//        verify(customerService, times(1)).findCustomer("john");
+//        verify(billRepository, times(1)).save(any(Bill.class));
+//    }
+
+//    @Test
 //    void createBill_WithNewCustomer_ShouldReturnBill() {
 //        // Arrange
 //        PaymentRequest request = new PaymentRequest();
@@ -407,100 +435,37 @@ class PaymentServiceImplTest {
     }
 
 //    @Test
-//    void createBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
+//    void testCreateBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
 //        // Arrange
 //        PaymentRequest request = new PaymentRequest();
 //        request.setUsername("john_doe");
-//        request.setToken("valid_token");
+//        request.setToken("123456");
 //        request.setIdPenitipan(1);
 //        request.setTotal(100.0);
 //        request.setMethod("PET_WALLET");
-//        request.setCode("");
+//        request.setCode("ABC123");
 //
 //        when(customerService.findCustomer("john_doe")).thenReturn(null);
-//        when(customerService.createCustomer(any())).thenReturn(new Customer());
-//        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> {
-//            Bill savedBill = invocation.getArgument(0);
-//            savedBill.setId(1); // Set a sample ID for the saved bill
-//            return savedBill;
-//        });
 //
 //        // Act
 //        Bill bill = paymentService.createBill(request);
 //
 //        // Assert
 //        assertNotNull(bill);
-//        assertEquals(1, bill.getId()); // Assuming the ID generated is 1
 //        assertEquals("john_doe", bill.getUsername());
 //        assertEquals(1, bill.getIdPenitipan());
 //        assertEquals(100.0, bill.getTotal());
 //        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
-//        assertEquals("", bill.getCode());
-//
-//        // Verify that the customer was created and saved
-//        verify(customerService).createCustomer(any());
-//        verify(billRepository).save(any(Bill.class));
+//        assertEquals("ABC123", bill.getCode());
+//        assertFalse(bill.isVerified());
+//        assertNull(bill.getIdCustomer());
+//        assertEquals(0.0, bill.getCustomerBalance());
+//        verify(billRepository, times(1)).save(bill);
+////        verify(customerService, times(1)).createCustomer(any());
+//        verify(customerService, times(1)).findCustomer("john_doe");
+//        verify(customerService, never()).setBalance(any(), anyDouble());
 //    }
 
-
-//    @Test
-//    void createBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
-//        // Arrange
-//        String username = "john";
-//        String token = "token123";
-//        double total = 100.0;
-//        Integer idPenitipan = 1;
-//        String method = PaymentMethod.PET_WALLET_WITH_COUPON.name();
-//        String code = "COUPON123";
-//
-//        PaymentRequest request = PaymentRequest.builder()
-//                .username(username)
-//                .token(token)
-//                .total(total)
-//                .idPenitipan(idPenitipan)
-//                .method(method)
-//                .code(code)
-//                .build();
-//
-//        CustomerRequest customerRequest = CustomerRequest.builder()
-//                .username(username)
-//                .token(token)
-//                .build();
-//
-//        Customer createdCustomer = new Customer();
-//        createdCustomer.setCustomerId(1);
-//        createdCustomer.setUsername(username);
-//        createdCustomer.setBalance(0.0);
-//
-//        Bill createdBill = new Bill();
-//        createdBill.setId(1);
-//        createdBill.setIdCustomer(createdCustomer.getCustomerId());
-//        createdBill.setUsername(createdCustomer.getUsername());
-//        createdBill.setTotal(total);
-//        createdBill.setCustomerBalance(createdCustomer.getBalance());
-//        createdBill.setMethod(PaymentMethod.PET_WALLET_WITH_COUPON);
-//        createdBill.setCode(code);
-//
-//        when(customerService.findCustomer(username)).thenReturn(null);
-//        when(customerService.createCustomer(customerRequest)).thenReturn(createdCustomer);
-//        when(billRepository.save(any(Bill.class))).thenReturn(createdBill);
-//
-//        // Act
-//        Bill result = paymentService.createBill(request);
-//
-//        // Assert
-//        assertNotNull(result);
-//        assertEquals(createdBill.getId(), result.getId());
-//        assertEquals(createdBill.getUsername(), result.getUsername());
-//        assertEquals(createdBill.getTotal(), result.getTotal());
-//        assertEquals(createdBill.getCustomerBalance(), result.getCustomerBalance());
-//        assertEquals(createdBill.getMethod(), result.getMethod());
-//        assertEquals(createdBill.getCode(), result.getCode());
-//
-//        verify(customerService).findCustomer(username);
-//        verify(customerService).createCustomer(customerRequest);
-//        verify(billRepository).save(any(Bill.class));
-//    }
     @Test
     void testCreateBill_WithMissingUsername_ShouldThrowInvalidInputException() {
         // Arrange
