@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BCABankTransferTest {
+ class BCABankTransferTest {
     private BCABankTransfer bcaBankTransfer;
     private TopUpFactory topUpFactory;
 
@@ -22,7 +22,7 @@ public class BCABankTransferTest {
     }
 
     @Test
-    public void testCreate() {
+     void testCreate() {
         AdminFee expectedAdminFee = new AdminFee() {
             @Override
             public Double getFee() {
@@ -49,7 +49,7 @@ public class BCABankTransferTest {
     }
 
     @Test
-    public void testCalculateSummaryAmount() {
+     void testCalculateSummaryAmount() {
         double expectedSummaryTopUp = 0.0;
 
         // Perform the calculateSummaryAmount method

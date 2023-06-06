@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class QrisTest {
+ class QrisTest {
     private Qris qris;
     private TopUpFactory topUpFactory;
 
@@ -22,7 +22,7 @@ public class QrisTest {
     }
 
     @Test
-    public void testCreate() {
+     void testCreate() {
         AdminFee expectedAdminFee = new AdminFee() {
             @Override
             public Double getFee() {
@@ -49,7 +49,7 @@ public class QrisTest {
     }
 
     @Test
-    public void testCalculateSummaryAmount() {
+     void testCalculateSummaryAmount() {
         AdminFee adminFee = new AdminFee() {
             @Override
             public Double getFee() {

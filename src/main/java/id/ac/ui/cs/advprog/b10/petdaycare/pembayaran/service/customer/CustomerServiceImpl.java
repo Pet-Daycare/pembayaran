@@ -3,13 +3,10 @@ package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.AuthTransactionDto;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.topup.CustomerRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.CustomerAlreadyExistException;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.exception.CustomerDoesNotExistException;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.Customer;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.repository.CustomerRepository;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.topup.TopUpService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +20,6 @@ import java.util.function.Supplier;
 public class CustomerServiceImpl implements CustomerService{
     private final RestTemplate restTemplate;
     private final CustomerRepository customerRepository;
-    TopUpService topUpService;
 
     @Override
     public Customer createCustomer(CustomerRequest request){
@@ -108,7 +104,7 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     private AuthTransactionDto verifyToken(String token) throws InterruptedException{
-        String otherInstanceURL = "http://localhost:8080/api/v1/auth/verify-token/"+token;
+        String otherInstanceURL = "http://104.198.131.227/api/v1/auth/verify-token/"+token;
 
         return restTemplate.getForObject((otherInstanceURL), AuthTransactionDto.class);
     }

@@ -10,10 +10,10 @@ import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.AprovalTopUpResponse;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.topup.TopUp;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.topup.TopUpService;
 
-public class TopUpControllerTest {
+ class TopUpControllerTest {
 
     @Test
-    public void testCreateTopUpRequest() {
+     void testCreateTopUpRequest() {
         // Arrange
         TopUpRequest topUpRequest = new TopUpRequest();
         TopUpService topUpService = mock(TopUpService.class);
@@ -30,7 +30,7 @@ public class TopUpControllerTest {
     }
 
     @Test
-    public void testGetDetailTopUp() {
+     void testGetDetailTopUp() {
         // Arrange
         String id = "123";
         TopUpService topUpService = mock(TopUpService.class);
@@ -47,7 +47,7 @@ public class TopUpControllerTest {
     }
 
     @Test
-    public void testGetAllTopUp() {
+     void testGetAllTopUp() {
         // Arrange
         TopUpService topUpService = mock(TopUpService.class);
         TopupController topupController = new TopupController(topUpService);
@@ -63,7 +63,7 @@ public class TopUpControllerTest {
     }
 
     @Test
-    public void testApprovalTopup() {
+     void testApprovalTopup() {
         // Arrange
         String id = "123";
         TopUpService topUpService = mock(TopUpService.class);
@@ -80,7 +80,7 @@ public class TopUpControllerTest {
     }
 
     @Test
-    public void testGetAllNotAprove() {
+     void testGetAllNotAprove() {
         // Arrange
         TopUpService topUpService = mock(TopUpService.class);
         TopupController topupController = new TopupController(topUpService);
@@ -96,7 +96,7 @@ public class TopUpControllerTest {
     }
 
     @Test
-    public void testGetAllApprove() {
+     void testGetAllApprove() {
         // Arrange
         TopUpService topUpService = mock(TopUpService.class);
         TopupController topupController = new TopupController(topUpService);
