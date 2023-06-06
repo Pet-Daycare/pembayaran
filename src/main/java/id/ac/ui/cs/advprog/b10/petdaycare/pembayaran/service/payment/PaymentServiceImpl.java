@@ -111,9 +111,11 @@ public class PaymentServiceImpl implements PaymentService {
         } else if (method.equals(PaymentMethod.PET_WALLET_WITH_COUPON) && !code.equals("") && couponRepository.existsByCode(code)) {
             CouponAdapter couponAdapter = new CouponAdapter(couponRepository.findByCode(code), customerService);
             return couponAdapter.pay(bill);
-        } else {
+        } else if (method.equals(PaymentMethod.PET_WALLET)){
             PetWalletPayment petWalletPayment = new PetWalletPayment(bill, customerService);
             return petWalletPayment.pay(bill);
+        } else {
+            return bill;
         }
     }
 
