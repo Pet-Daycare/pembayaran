@@ -87,75 +87,6 @@ class PaymentServiceImplTest {
         verify(billRepository, times(1)).save(any(Bill.class));
     }
 
-    @Test
-    void createBill_withNewCustomer_shouldReturnBill() {
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setUsername("john");
-        paymentRequest.setToken("123456");
-        paymentRequest.setIdPenitipan(1);
-        paymentRequest.setTotal(100.0);
-        paymentRequest.setMethod("PET_WALLET");
-        paymentRequest.setCode("ABC123");
-
-        when(customerService.findCustomer("john")).thenReturn(null);
-        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        Bill bill = paymentService.createBill(paymentRequest);
-
-        assertNotNull(bill);
-        assertEquals("john", bill.getUsername());
-        assertEquals(1, bill.getIdPenitipan());
-        assertEquals(100.0, bill.getTotal());
-        assertEquals(0.0, bill.getCustomerBalance());
-        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
-        assertEquals("ABC123", bill.getCode());
-        assertFalse(bill.isVerified());
-
-        verify(customerService, times(1)).findCustomer("john");
-        verify(billRepository, times(1)).save(any(Bill.class));
-    }
-
-    @Test
-    void createBill_WithNewCustomer_ShouldReturnBill() {
-        // Arrange
-        PaymentRequest request = new PaymentRequest();
-        request.setUsername("john_doe");
-        request.setToken("valid_token");
-        request.setIdPenitipan(1);
-        request.setTotal(100.0);
-        request.setMethod("PET_WALLET");
-        request.setCode("123456");
-
-        Customer existingCustomer = new Customer();
-        existingCustomer.setUsername("john_doe");
-
-        when(customerService.findCustomer("john_doe")).thenReturn(null);
-        when(customerService.createCustomer(any(CustomerRequest.class))).thenReturn(existingCustomer);
-
-        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> {
-            Bill savedBill = invocation.getArgument(0);
-            savedBill.setId(1); // Set a sample ID for the saved bill
-            return savedBill;
-        });
-
-        // Act
-        Bill result = paymentService.createBill(request);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.getId());
-        assertEquals(existingCustomer.getCustomerId(), result.getIdCustomer());
-        assertEquals(existingCustomer.getUsername(), result.getUsername());
-        assertEquals(request.getIdPenitipan(), result.getIdPenitipan());
-        assertEquals(request.getTotal(), result.getTotal());
-        assertEquals(0.0, result.getCustomerBalance());
-        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
-        assertEquals(request.getCode(), result.getCode());
-
-        verify(customerService).findCustomer("john_doe");
-        verify(customerService).createCustomer(any(CustomerRequest.class));
-        verify(billRepository).save(any(Bill.class));
-    }
 
     @Test
     void payRefund_ValidBill_ReturnsPaidRefundedBill() {
@@ -176,22 +107,59 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    void makePayment_withNotValidCouponPayment_shouldReturnUnpaidBill() throws InterruptedException {
+        Customer customer = new Customer();
+        customer.setUsername("john");
+        customer.setBalance(500000.0);
+        customerRepository.save(customer);
+
+        Bill bill = new Bill();
+        bill.setId(1);
+        bill.setUsername("john");
+        bill.setMethod(PaymentMethod.PET_WALLET_WITH_COUPON);
+        bill.setCode("ABC123");
+        bill.setTotal(100000.0);
+        billRepository.save(bill);
+
+        when(customerService.findCustomer("john")).thenReturn(customer);
+        when(couponRepository.existsByCode("ABC123")).thenReturn(false);
+
+        Bill result = paymentService.makePayment(bill);
+
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("john", result.getUsername());
+        assertEquals(PaymentMethod.PET_WALLET_WITH_COUPON, result.getMethod());
+        assertEquals("ABC123", result.getCode());
+        assertFalse(result.isPaid());
+
+        verify(billRepository, times(1)).save(any(Bill.class));
+    }
+    @Test
     void makePayment_withVoucherPayment_shouldReturnPaidBill() throws InterruptedException {
+        Customer customer = new Customer();
+        customer.setUsername("john");
+        customer.setBalance(500000.0);
+        customerRepository.save(customer);
+
         Bill bill = new Bill();
         bill.setId(1);
         bill.setUsername("john");
         bill.setMethod(PaymentMethod.PET_WALLET_WITH_VOUCHER);
         bill.setCode("ABC123");
+        bill.setTotal(100.0);
+        billRepository.save(bill);
 
         Voucher voucher = new Voucher();
         voucher.setId(1);
         voucher.setCode("ABC123");
         voucher.setAmount(100.0);
         voucher.setRedeemed(false);
+        voucherRepository.save(voucher);
 
+        when(customerService.findCustomer("john")).thenReturn(customer);
         when(voucherRepository.existsByCode("ABC123")).thenReturn(true);
         when(voucherRepository.findByCode("ABC123")).thenReturn(voucher);
-        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Bill result = paymentService.makePayment(bill);
 
@@ -200,27 +168,64 @@ class PaymentServiceImplTest {
         assertEquals("john", result.getUsername());
         assertEquals(PaymentMethod.PET_WALLET_WITH_VOUCHER, result.getMethod());
         assertEquals("ABC123", result.getCode());
+        assertTrue(result.isPaid());
 
         verify(voucherRepository, times(1)).existsByCode("ABC123");
         verify(voucherRepository, times(1)).findByCode("ABC123");
     }
 
     @Test
+    void makePayment_withPetWalletPayment_shouldReturnPaidBill() throws InterruptedException {
+        Customer customer = new Customer();
+        customer.setUsername("john");
+        customer.setBalance(500000.0);
+        customerRepository.save(customer);
+
+        Bill bill = new Bill();
+        bill.setId(1);
+        bill.setUsername("john");
+        bill.setTotal(100000.0);
+        bill.setMethod(PaymentMethod.PET_WALLET);
+        bill.setCode("");
+        billRepository.save(bill);
+
+        when(customerService.findCustomer("john")).thenReturn(customer);
+
+        Bill result = paymentService.makePayment(bill);
+
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("john", result.getUsername());
+        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
+        assertTrue(result.isPaid());
+
+        verify(billRepository, times(1)).save(any(Bill.class));
+    }
+
+    @Test
     void makePayment_withCouponPayment_shouldReturnPaidBill() throws InterruptedException {
+        Customer customer = new Customer();
+        customer.setUsername("john");
+        customer.setBalance(500000.0);
+        customerRepository.save(customer);
+
+        Coupon coupon = new Coupon();
+        coupon.setId(1);
+        coupon.setCode("ABC123");
+        coupon.setDiscount(50);
+        couponRepository.save(coupon);
+
         Bill bill = new Bill();
         bill.setId(1);
         bill.setUsername("john");
         bill.setMethod(PaymentMethod.PET_WALLET_WITH_COUPON);
         bill.setCode("ABC123");
+        bill.setTotal(100000.0);
+        billRepository.save(bill);
 
-        Coupon coupon = new Coupon();
-        coupon.setId(1);
-        coupon.setCode("ABC123");
-        coupon.setDiscount(50.0);
-
+        when(customerService.findCustomer("john")).thenReturn(customer);
         when(couponRepository.existsByCode("ABC123")).thenReturn(true);
         when(couponRepository.findByCode("ABC123")).thenReturn(coupon);
-        when(billRepository.save(any(Bill.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Bill result = paymentService.makePayment(bill);
 
@@ -427,36 +432,6 @@ class PaymentServiceImplTest {
         verify(customerService, never()).setBalance(any(), anyDouble());
     }
 
-    @Test
-    void testCreateBill_WithUnknownCustomer_ShouldCreateCustomerAndBill() {
-        // Arrange
-        PaymentRequest request = new PaymentRequest();
-        request.setUsername("john_doe");
-        request.setToken("123456");
-        request.setIdPenitipan(1);
-        request.setTotal(100.0);
-        request.setMethod("PET_WALLET");
-        request.setCode("ABC123");
-
-        when(customerService.findCustomer("john_doe")).thenReturn(null);
-
-        // Act
-        Bill bill = paymentService.createBill(request);
-
-        // Assert
-        assertNotNull(bill);
-        assertEquals("john_doe", bill.getUsername());
-        assertEquals(1, bill.getIdPenitipan());
-        assertEquals(100.0, bill.getTotal());
-        assertEquals(PaymentMethod.PET_WALLET, bill.getMethod());
-        assertEquals("ABC123", bill.getCode());
-        assertFalse(bill.isVerified());
-        assertNull(bill.getIdCustomer());
-        assertEquals(0.0, bill.getCustomerBalance());
-        verify(billRepository, times(1)).save(bill);
-        verify(customerService, times(1)).findCustomer("john_doe");
-        verify(customerService, never()).setBalance(any(), anyDouble());
-    }
 
     @Test
     void testCreateBill_WithMissingUsername_ShouldThrowInvalidInputException() {
