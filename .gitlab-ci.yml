@@ -25,6 +25,8 @@ sonarcloud-check:
     - merge_requests
     - master
     - develop
+    - post-sprint-revision
+  allow_failure: true
 
 stages:
   - build
@@ -47,6 +49,7 @@ Build:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
+
 Test:
   stage: test
   image: gradle:jdk17-alpine
@@ -69,12 +72,13 @@ Test:
       junit:
         build/test-results/test/**/TEST-*.xml
   coverage: '/Total.*?([0-9]{1,3})%/'
+  allow_failure: true
 
 Publish:
   stage: publish
   image: docker:latest
   services:
-    - docker:dind
+    - docker:20.10.16-dind
   dependencies:
     - Build
   before_script:

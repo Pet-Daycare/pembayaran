@@ -32,11 +32,9 @@ public class CustomerController {
     public ResponseEntity<Customer> detailCustomer(@PathVariable("username") String username){
         try{
             Customer response = customerService.findCustomer(username);
-//
+
             return ResponseEntity.ok(response);
-//            HttpHeaders header = new HttpHeaders();
-//            header.add("decs", "Error Desc");
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(null).body(response);
+
         } catch (Exception err){
             HttpHeaders headers = new HttpHeaders();
             headers.add("decs", "Error Desc");

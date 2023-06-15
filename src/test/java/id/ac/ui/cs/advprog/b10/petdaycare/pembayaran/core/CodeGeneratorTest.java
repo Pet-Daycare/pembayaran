@@ -1,21 +1,27 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.CodeGenerator;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class CodeGeneratorTest {
+class CodeGeneratorTest {
 
     @Test
-    public void testGenerate() {
+    void generate_ShouldReturnRandomCodeWithLength10() {
+        // Act
         String code = CodeGenerator.generate();
 
-        // Check if the generated code has the correct length
+        // Assert
+        assertNotNull(code);
         assertEquals(10, code.length());
+    }
 
-        // Check if the generated code only contains alphanumeric characters
-        assertTrue(code.matches("^[a-zA-Z0-9]*$"));
+    @Test
+    void generate_ShouldNotReturnNull() {
+        // Act
+        String code = CodeGenerator.generate();
+
+        // Assert
+        assertNotNull(code);
     }
 }

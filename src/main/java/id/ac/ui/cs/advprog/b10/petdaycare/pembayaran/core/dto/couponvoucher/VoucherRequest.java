@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher;
+package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

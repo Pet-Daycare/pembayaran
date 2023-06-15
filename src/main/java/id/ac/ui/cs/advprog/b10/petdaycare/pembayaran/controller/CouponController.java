@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.controller;
 
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.CouponRequest;
-import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponVoucher.VoucherRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.CouponRequest;
+import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.core.dto.couponvoucher.VoucherRequest;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Coupon;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.model.payment.Voucher;
 import id.ac.ui.cs.advprog.b10.petdaycare.pembayaran.service.payment.PaymentService;
@@ -18,7 +18,7 @@ public class CouponController {
 
     private final PaymentService paymentService;
     @PostMapping("/admin/coupon/add")
-    public ResponseEntity<Coupon> addCoupon(@RequestBody CouponRequest request) throws InterruptedException {
+    public ResponseEntity<Coupon> addCoupon(@RequestBody CouponRequest request) {
         Coupon coupon = paymentService.addCoupon(request);
         return ResponseEntity.ok(coupon);
     }
@@ -34,7 +34,7 @@ public class CouponController {
     }
 
     @PostMapping("/admin/voucher/add")
-    public ResponseEntity<Voucher> addVoucher(@RequestBody VoucherRequest request) throws InterruptedException {
+    public ResponseEntity<Voucher> addVoucher(@RequestBody VoucherRequest request) {
         Voucher voucher = paymentService.addVoucher(request);
         return ResponseEntity.ok(voucher);
     }

@@ -10,7 +10,6 @@ public class TopUpCalculateServiceImpl implements TopUpCalculateService {
     TopUpBuilder builder = new SystemBuilder();
     @Override
     public TopUpCalulate createCalculateTopUp(TopUpTypeBrand topUpTypeBrand){
-        TopUpCalulate topUp = builder.getTopUp(topUpTypeBrand);
-        return topUp;
+        return builder.getTopUp(topUpTypeBrand);
         }
     }

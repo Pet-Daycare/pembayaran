@@ -16,7 +16,7 @@ public class CouponAdapter implements Payment {
     }
 
     @Override
-    public Bill pay(Bill bill) throws InterruptedException {;
+    public Bill pay(Bill bill) throws InterruptedException {
         if(adaptedCoupon.isRedeemed()){
             return bill;
         }

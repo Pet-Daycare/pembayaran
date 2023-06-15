@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AprovalTopUpResponse {
     String message;
-    TopUp detail_topup;
+    TopUp detailTopup;
 }

@@ -12,51 +12,112 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class PetWalletPaymentTest {
+ class PetWalletPaymentTest {
 
     @Mock
     private CustomerService customerService;
+    @Mock
+    private Bill bill;
 
     private PetWalletPayment petWalletPayment;
-    private Bill bill;
     private Customer customer;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        bill = new Bill();
-        bill.setUsername("john");
-        bill.setTotal(100.0);
-
-        customer = new Customer();
-        customer.setUsername("john");
-        customer.setBalance(200.0);
-
         when(customerService.findCustomer("john")).thenReturn(customer);
 
         petWalletPayment = new PetWalletPayment(bill, customerService);
     }
 
-    @Test
-    public void testPay_SufficientBalance_BillPaid() {
-        Bill paidBill = petWalletPayment.pay(bill);
+     @Test
+     void setCustomerService_SetsCorrectValue() {
+         // Act
+         petWalletPayment.setCustomerService(customerService);
 
-        assertTrue(paidBill.isPaid());
-        assertEquals(PaymentMethod.PET_WALLET, paidBill.getMethod());
-        assertEquals(100.0, paidBill.getCustomerBalance());
-        assertEquals(100.0, customer.getBalance());
+         // Assert
+         assertEquals(customerService, petWalletPayment.getCustomerService());
+     }
+
+     @Test
+     void setBill_SetsCorrectValue() {
+         // Act
+         petWalletPayment.setBill(bill);
+
+         // Assert
+         assertEquals(bill, petWalletPayment.getBill());
+     }
+     @Test
+     void getCustomerService_ReturnsCorrectValue() {
+         // Act
+         CustomerService result = petWalletPayment.getCustomerService();
+
+         // Assert
+         assertEquals(customerService, result);
+     }
+
+     @Test
+     void getBill_ReturnsCorrectValue() {
+         // Act
+         Bill result = petWalletPayment.getBill();
+
+         // Assert
+         assertEquals(bill, result);
+     }
+
+    @Test
+    void pay_WithSufficientBalance_ReturnsPaidBill() {
+        // Arrange
+        Double billTotal = 100000.0;
+        Double initialBalance = 200000.0;
+
+        bill = new Bill();
+        bill.setUsername("john");
+        bill.setTotal(billTotal);
+        bill.setMethod(PaymentMethod.PET_WALLET);
+
+        customer = new Customer();
+        customer.setUsername("john");
+        customer.setBalance(initialBalance);
+
+        when(customerService.findCustomer(bill.getUsername())).thenReturn(customer);
+
+        // Act
+        Bill result = petWalletPayment.pay(bill);
+
+        // Assert
+        assertTrue(result.isPaid());
+        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
+        assertEquals(initialBalance - billTotal, result.getCustomerBalance());
+        assertEquals(initialBalance - billTotal, customer.getBalance());
+        verify(customerService, times(1)).findCustomer(bill.getUsername());
     }
 
     @Test
-    public void testPay_InsufficientBalance_BillNotPaid() {
-        customer.setBalance(50.0);
+    void pay_WithInsufficientBalance_ReturnsUnpaidBill() {
+        // Arrange
+        double billTotal = 100000;
+        double initialBalance = 50000;
 
-        Bill unpaidBill = petWalletPayment.pay(bill);
+        bill = new Bill();
+        bill.setUsername("john");
+        bill.setTotal(billTotal);
+        bill.setMethod(PaymentMethod.PET_WALLET);
 
-        assertFalse(unpaidBill.isPaid());
-        assertNull(unpaidBill.getMethod());
-        assertEquals(0.0, unpaidBill.getCustomerBalance());
-        assertEquals(50.0, customer.getBalance());
+        customer = new Customer();
+        customer.setUsername("john");
+        customer.setBalance(initialBalance);
+
+        when(customerService.findCustomer(bill.getUsername())).thenReturn(customer);
+
+        // Act
+        Bill result = petWalletPayment.pay(bill);
+
+        // Assert
+        assertFalse(result.isPaid());
+        assertEquals(PaymentMethod.PET_WALLET, result.getMethod());
+        assertEquals(initialBalance, customer.getBalance());
+        verify(customerService, times(1)).findCustomer(bill.getUsername());
     }
 }
